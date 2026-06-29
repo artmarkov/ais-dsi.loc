@@ -351,6 +351,8 @@ class DefaultController extends MainController
 
             $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
             $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
+            $model->load_time = $teachersLoadModel->week_time ?? 0;
+            $model->load_time_consult = $teachersLoadModel->year_time_consult ?? 0;
             if ($model->load(Yii::$app->request->post()) AND $model->save()) {
                 Yii::$app->session->setFlash('info', Yii::t('art', 'Your item has been created.'));
                 $this->getSubmitAction($model);

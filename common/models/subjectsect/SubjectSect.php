@@ -13,9 +13,11 @@ use common\models\subject\SubjectCategory;
 use common\models\subject\SubjectType;
 use common\models\subject\SubjectVid;
 use common\models\teachers\TeachersLoad;
+use phpDocumentor\Reflection\Types\Self_;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -488,16 +490,18 @@ SQL;
      */
     public function getSubjectSectCopyAvailable()
     {
+        // $programm_list = implode(',', $this->programm_list);
         $models = self::find()->select(['id', 'sect_name'])
             ->where(['subject_cat_id' => $this->subject_cat_id])
-            ->andWhere(['=', 'subject_vid_id', $this->subject_vid_id])
-            ->andWhere(['=', 'term_mastering', $this->term_mastering]);
-        /* if ($this->course_list != '') {
-             $models = $models->andWhere(['=', 'course_list', implode(',', $this->course_list)]);
-         }*/
+            ->andWhere(['=', 'subject_vid_id', $this->subject_vid_id]);
+        if ($this->course_flag) {
+            $models = $models->andWhere(['=', 'term_mastering', $this->term_mastering]);
+        }
         $models = $models->andWhere(['=', 'subject_type_id', $this->subject_type_id])
             ->andWhere(['!=', 'subject_id', $this->subject_id])
+            ->andWhere(['status' => self::STATUS_ACTIVE])
             ->andWhere(['programm_list' => implode(',', $this->programm_list)])
+            //->andWhere(new Expression("string_to_array(programm_list, ','::text)::text[] && string_to_array('{$programm_list}', ','::text)::text[]")) // сравнение массивов
             ->asArray()
             ->all();
 
@@ -533,22 +537,26 @@ SQL;
      */
     public function cloneDistribution($ids, $model_date)
     {
-//            echo '<pre>' . print_r($ids, true) . '</pre>'; die();
+        $data = Yii::$app->request->post();
+//            echo '<pre>' . print_r($data['SubjectSectStudyplan'], true) . '</pre>'; die();
         foreach ($ids as $item => $id) {
             $model = self::findOne($id);
-            $data = Yii::$app->request->post();
             foreach ($data['SubjectSectStudyplan'] as $itm => $dataItem) {
                 $m = SubjectSectStudyplan::find()->where(['=', 'subject_sect_id', $model->id])
-                        ->andWhere(['=', 'group_num', $dataItem['group_num']])
-                        ->andWhere(['=', 'plan_year', $model_date->plan_year])
-                        ->andWhere(['=', 'course', $dataItem['course']])
-                        ->andWhere(['=', 'subject_type_id', $dataItem['subject_type_id']])
+                    ->andWhere(['=', 'group_num', $dataItem['group_num']])
+                    ->andWhere(['=', 'plan_year', $model_date->plan_year]);
+                if (isset($dataItem['course'])) {
+                    $m = $m->andWhere(['=', 'course', $dataItem['course']]);
+                }
+                $m = $m->andWhere(['=', 'subject_type_id', $dataItem['subject_type_id']])
                         ->one() ?? new SubjectSectStudyplan();
 
                 $m->subject_sect_id = $model->id;
                 $m->group_num = $dataItem['group_num'];
                 $m->plan_year = $model_date->plan_year;
-                $m->course = $dataItem['course'];
+                if (isset($dataItem['course'])) {
+                    $m->course = $dataItem['course'];
+                }
                 $m->subject_type_id = $dataItem['subject_type_id'];
                 $m->studyplan_subject_list = $this->getSubjectSect($dataItem['studyplan_subject_list'], $model);
                 $m->save(false);

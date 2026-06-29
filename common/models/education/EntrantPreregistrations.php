@@ -2,10 +2,7 @@
 
 namespace common\models\education;
 
-use artsoft\Art;
-use artsoft\helpers\ArtHelper;
 use artsoft\models\User;
-use artsoft\widgets\Notice;
 use common\models\students\Student;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubject;
@@ -57,8 +54,8 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
     public function behaviors()
     {
         return [
-            BlameableBehavior::class,
-            TimestampBehavior::class,
+            TimestampBehavior::className(),
+            BlameableBehavior::className(),
         ];
     }
 
@@ -70,6 +67,7 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
         return [
             [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid'], 'required'],
             [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid', 'status'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
             [['entrant_programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantProgramm::class, 'targetAttribute' => ['entrant_programm_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],

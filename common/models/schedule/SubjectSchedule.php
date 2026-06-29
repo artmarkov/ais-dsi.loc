@@ -33,6 +33,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $time_duration
  *
  * @property TeachersLoad $teachersLoad
  * @property Direction $direction
@@ -307,7 +308,6 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
     // Автоматическое добавление расписания для концертмейтера
     public function beforeSave($insert)
     {
-        $this->time_out = Schedule::decodeTime(Schedule::encodeTime($this->time_in) + $this->time_duration * 60);
         if (parent::beforeSave($insert)) {
             if ($insert) {
                 $model = TeachersLoad::find()

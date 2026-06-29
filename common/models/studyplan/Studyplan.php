@@ -20,9 +20,11 @@ use common\models\schedule\SubjectScheduleStudyplanView;
 use common\models\subject\SubjectForm;
 use common\models\subjectsect\SubjectSect;
 use common\models\subjectsect\SubjectSectStudyplan;
+use common\models\teachers\Teachers;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersLoadStudyplanView;
 use common\models\teachers\TeachersLoadView;
+use common\models\user\UserCommon;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use Yii;
@@ -786,6 +788,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
                 if (!$modelSub['teachers_id']) {
                     continue;
                 }
+                $modelTeachers = (new Query())->from('teachers_view')
+                    ->where(['teachers_id' => $modelSub['teachers_id']])
+                    ->one();
+                if ($modelTeachers['status'] == (int)UserCommon::STATUS_INACTIVE) {
+                    continue;
+                }
                 $model_subject = StudyplanSubject::find()
                     ->where(['=', 'studyplan_id', $newModel->id])
                     ->andWhere(['=', 'subject_type_id', $modelSub['subject_type_id']])
@@ -901,6 +909,14 @@ class Studyplan extends \artsoft\db\ActiveRecord
             ->andWhere(['=', 'student_id', $this->student_id])->one();
 //        echo '<pre>' . print_r($model, true) . '</pre>';die();
         if ($model) {
+            foreach ($model->studyplanSubject as $modelStudyplanSubject) {
+                $model_load = TeachersLoad::find()
+                    ->where(['=', 'studyplan_subject_id', $modelStudyplanSubject->id])
+                    ->one();
+                if ($model_load) {
+                    $model_load->delete(false);
+                }
+            }
             $model->delete(false);
         }
     }
