@@ -164,7 +164,7 @@ class DefaultController extends MainController
                     }
                     if ($flag) {
                         $transaction->commit();
-                        if (isset($_POST['DynamicModel']) && $_POST['DynamicModel']['distr_flag'] == 1 && count($_POST['DynamicModel']['sect_list']) != 0) {
+                        if (isset($_POST['DynamicModel']) && $_POST['DynamicModel']['distr_flag'] == 1 && $_POST['DynamicModel']['sect_list'] != '') {
                             $model->cloneDistribution($_POST['DynamicModel']['sect_list'], $model_date);
                         }
                         $this->getSubmitAction();

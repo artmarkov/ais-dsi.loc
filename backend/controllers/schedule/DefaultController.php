@@ -11,6 +11,7 @@ use common\models\studyplan\StudyplanSubjectHist;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersPlan;
 use Yii;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 class DefaultController extends MainController
@@ -24,24 +25,18 @@ class DefaultController extends MainController
         $this->view->params['breadcrumbs'][] = 'Расписание занятий';
         $model_date = $this->modelDate;
 
-        $models = SubjectScheduleView::find()
+        $models = (new Query())->from('schedule_net_view')
             ->where(['=', 'plan_year', $model_date->plan_year])
-            ->andWhere(['OR',
-                ['status' => Studyplan::STATUS_ACTIVE],
-                ['AND',
-                    ['status' => Studyplan::STATUS_INACTIVE],
-                    ['status_reason' => [1, 2, 4]]
-                ]
-            ])
             ->andWhere(['IS NOT', 'auditory_id', null])
-            ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()]);
+            /*->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])*/;
+
         if ($model_date->teachers_id) {
             $models = $models->andWhere(['=', 'teachers_id', $model_date->teachers_id]);
         }
         if ($model_date->auditory_id) {
             $models = $models->andWhere(['=', 'auditory_id', $model_date->auditory_id]);
         }
-        $models = $models->asArray()->orderBy('week_day, time_in, direction_id')->all();
+        $models = $models->all();
         $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day', 'time_in']);
         $modelsAuditory = Auditory::find()->joinWith('cat')->where(['=', 'study_flag', true]);
 
@@ -50,11 +45,6 @@ class DefaultController extends MainController
         }
         $modelsAuditory = $modelsAuditory->orderBy(['sort_order' => SORT_ASC])->all();
 
-//        $modelsPlan = TeachersPlan::find()
-//            ->where(['=', 'plan_year', $model_date->plan_year]);
-//        $modelsPlan = $modelsPlan->asArray()->orderBy('week_day,time_plan_in')->all();
-
-//        echo '<pre>' . print_r($modelsPlan, true) . '</pre>';
 //        echo '<pre>' . print_r($data, true) . '</pre>'; die();
         return $this->renderIsAjax('index', compact('model_date', 'data', 'modelsAuditory'));
 

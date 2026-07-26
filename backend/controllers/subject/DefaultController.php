@@ -11,7 +11,7 @@ class DefaultController extends MainController
 {
     public $modelClass = 'common\models\subject\Subject';
     public $modelSearchClass = 'common\models\subject\search\SubjectSearch';
-
+    public $freeAccessActions = ['subject'];
     /**
      *  формируем список дисциплин для widget DepDrop::classname()
      * @return false|string

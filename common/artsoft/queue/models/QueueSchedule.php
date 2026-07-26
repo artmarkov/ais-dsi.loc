@@ -62,7 +62,7 @@ class QueueSchedule extends QueueScheduleMain
             ['status', 'default', 'value' => self::STATUS_DISABLE],
             [['title', 'class', 'cron_expression'], 'string', 'max' => 127],
             [['created_at', 'updated_at', 'created_by', 'updated_by'], 'safe'],
-            ['cron_expression', 'match', 'pattern' => Yii::$app->getModule('queue-schedule')->cronRedexp, 'message' => Yii::t('art/queue', 'Invalid cron expression.')],          
+//            ['cron_expression', 'match', 'pattern' => Yii::$app->getModule('queue-schedule')->cronRedexp, 'message' => Yii::t('art/queue', 'Invalid cron expression.')],
             ['created_by', 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             ['updated_by', 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
         ];

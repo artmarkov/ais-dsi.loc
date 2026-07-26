@@ -34,9 +34,9 @@ use yii\helpers\Url;
                 <div class="col-sm-12">
                     <?= $form->field($model, 'plan_year')->dropDownList(\artsoft\helpers\ArtHelper::getStudyYearsList(),
                         [
-                            'disabled' => $model->plan_year ? true : $readonly,
-                            'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
-                            ]
+                            'disabled' => $readonly,
+                            /*'options' => [\artsoft\helpers\ArtHelper::getStudyYearDefault() => ['Selected' => $model->isNewRecord ? true : false]
+                            ]*/
                         ]);
                     ?>
                     <?= $form->field($model, 'direction_id')->widget(\kartik\select2\Select2::class, [
