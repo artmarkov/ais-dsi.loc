@@ -377,10 +377,10 @@ class DefaultController extends MainController
             $this->view->params['breadcrumbs'][] = ['label' => Yii::t('art/guide', 'Entrant Groups'), 'url' => ['/entrant/default/group', 'id' => $id]];
             $this->view->params['breadcrumbs'][] = 'Добавление группы';
             $modelGroup = new EntrantGroup();
-            $modelGroup->comm_id = Yii::$app->request->get('id') ?: null;
+            $modelGroup->comm_id = $id;
             $modelGroup->prep_flag = 1;
 
-            if ($model->load(Yii::$app->request->post())) {
+            if ($modelGroup->load(Yii::$app->request->post())) {
                 $valid = $modelGroup->validate();
                 if ($valid) {
                     if ($modelGroup->save()) {
