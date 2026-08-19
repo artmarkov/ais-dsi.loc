@@ -151,7 +151,7 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
                 ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
                 ->orderBy('student_fio')
                 ->all();
-           // print_r($this->studyplan_subject_list); die();
+//            echo '<pre>' . print_r($this, true) . '</pre>';die();
             foreach ($modelsItems as $item => $model) {
                 $data[$model['studyplan_subject_id']] = [
                     'content' => $this->getSubjectSectStudyplanContent($model),
@@ -159,6 +159,37 @@ class SubjectSectStudyplan extends \artsoft\db\ActiveRecord
                 ];
             }
         }
+        return $data;
+    }
+
+    public static function getSubjectSectStudyplansAll($modelsSubjectSectStudyplan, $readonly = false)
+    {
+        $data = [];
+            $ids = \yii\helpers\ArrayHelper::map($modelsSubjectSectStudyplan,'id','studyplan_subject_list');
+            $ids = array_filter($ids);
+            $ids = implode(',', $ids);
+
+            $modelsItems = (new Query())->from('studyplan_subject_view')
+                ->select('subject_sect_studyplan_id, studyplan_subject_id, student_fullname, memo_2, education_programm_short_name, course, speciality')
+                ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$ids}', ',')::int[])"))
+                ->andWhere(['OR',
+                    ['status' => Studyplan::STATUS_ACTIVE],
+                    ['AND',
+                        ['status' => Studyplan::STATUS_INACTIVE],
+                        ['status_reason' => [1, 2, 4]]
+                    ]
+                ])
+                ->andWhere(['is not', 'subject_sect_studyplan_id', NULL])
+                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->orderBy('student_fio')
+                ->all();
+            //echo '<pre>' . print_r($modelsItems, true) . '</pre>'; die();
+            foreach ($modelsItems as $item => $model) {
+                $data[$model['subject_sect_studyplan_id']][$model['studyplan_subject_id']] = [
+                    'content' => self::getSubjectSectStudyplanContent($model),
+                    'disabled' => $readonly
+                ];
+            }
         return $data;
     }
 

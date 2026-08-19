@@ -22,6 +22,9 @@ if ($course_list[0] == null) {
 $class_index = $model->class_index;
 $course_flag = $model->course_flag;
 $group = 0;
+$itemsAll = \common\models\subjectsect\SubjectSectStudyplan::getSubjectSectStudyplansAll($modelsSubjectSectStudyplan, $readonly);
+$models_schAll = \common\models\schedule\SubjectSchedule::getScheduleSectAll($modelsSubjectSectStudyplan);
+$class_array = RefBook::find('sect_name_2')->getList();
 ?>
     <div class="subject-sect-form">
 
@@ -74,20 +77,12 @@ $group = 0;
 
                                     }
                                     echo '<td>';
-                                    $class_name = RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
-                                    $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
-                                    $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($modelSubjectSectStudyplan->id, 0);
-                                    $class_name .= ' - ' . count($items) . ' уч-ся.';
-                                    $string = '';
-                                    ?>
-                                    <?php foreach ($models_sch as $itm => $m): ?>
-                                        <?php
-                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
-                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out . ' ';
+                                    $class_name = $class_array[$modelSubjectSectStudyplan->id] ?? '';
+//                                    $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
+                                    $items = $itemsAll[$modelSubjectSectStudyplan->id] ?? [];
 
-                                        ?>
-                                    <?php endforeach; ?>
-                                    <?php
+                                    $class_name .= ' - ' . count($items) . ' уч-ся.';
+                                    $string = $models_schAll[$modelSubjectSectStudyplan->id] ?? '';
                                     $class_name .= $string != '' ? ' ('. $string. ')' : '';
                                     echo $class_name;
                                     // necessary for update action.
@@ -160,23 +155,16 @@ $group = 0;
                                 </tr>
                                 </thead>
                                 <tbody class="container-items">
+
                                 <?php foreach ($modelsSubjectSectStudyplan as $index => $modelSubjectSectStudyplan): ?>
                                     <?php
-                                    $class_name = RefBook::find('sect_name_2')->getValue($modelSubjectSectStudyplan->id);
-                                    $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
-                                    $models_sch = \common\models\schedule\SubjectSchedule::getSchedule($modelSubjectSectStudyplan->id, 0);
-                                    $class_name .= ' - ' . count($items) . ' уч-ся.';
-                                    $string = '';
-                                    ?>
-                                    <?php foreach ($models_sch as $itm => $m): ?>
-                                        <?php
-                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m->week_num);
-                                        $string .= ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m->week_day) . ' ' . $m->time_in . '-' . $m->time_out . ' ';
+                                    $class_name = $class_array[$modelSubjectSectStudyplan->id] ?? '';
+//                                    $items = $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly);
+                                    $items = $itemsAll[$modelSubjectSectStudyplan->id] ?? [];
 
-                                        ?>
-                                    <?php endforeach; ?>
-                                    <?php
-                                    $class_name .= $string != '' ? '<br/>('. $string. ')' : '';
+                                    $class_name .= ' - ' . count($items) . ' уч-ся.';
+                                    $string = $models_schAll[$modelSubjectSectStudyplan->id] ?? '';
+                                    $class_name .= $string != '' ? ' ('. $string. ')' : '';
 
                                     echo '
                                     <tr>
@@ -209,7 +197,7 @@ $group = 0;
                                             ],
                                             'options' => ['class' => 'form-control', 'readonly' => true],
                                             'delimiter' => ',',
-                                            'items' => $modelSubjectSectStudyplan->getSubjectSectStudyplans($readonly),
+                                            'items' => $items,
                                             ]);
 
                                             echo '<p class="help-block help-block-error"></p>

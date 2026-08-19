@@ -16,6 +16,7 @@ use common\models\teachers\TeachersPlan;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "subject_schedule".
@@ -282,6 +283,35 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
                 ])
             ->andWhere(['is', 'guide_teachers_direction.parent', null])
             ->all();
+    }
+
+    public static function getScheduleSectAll($modelsSubjectSectStudyplan)
+    {
+        $string = [];
+        $ids = \yii\helpers\ArrayHelper::getColumn($modelsSubjectSectStudyplan, 'id');
+        $ids = array_filter($ids);
+        $models = SubjectSchedule::find()
+            ->select('subject_sect_studyplan_id,week_num,week_day,time_in,time_out')
+            ->innerJoin('teachers_load', 'teachers_load.id = subject_schedule.teachers_load_id')
+            ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_load.direction_id')
+            ->where(
+                ['AND',
+                    ['subject_sect_studyplan_id' => $ids],
+                    ['studyplan_subject_id' => 0],
+                ])
+            ->andWhere(['is', 'guide_teachers_direction.parent', null])
+            ->asArray()
+            ->all();
+        $models = ArrayHelper::index($models, null, 'subject_sect_studyplan_id');
+        foreach ($models as $subject_sect_studyplan_id => $model) {
+            $string[$subject_sect_studyplan_id] = '';
+            foreach ($model as $itm => $m) {
+                $s = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m['week_num']) . ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m['week_day']) . ' ' . Schedule::decodeTime($m['time_in']) . '-' . Schedule::decodeTime($m['time_out']) . ' ';
+                $string[$subject_sect_studyplan_id] .= $s;
+            }
+        }
+
+        return $string;
     }
     /* public function afterSave($insert, $changedAttributes)
      {
