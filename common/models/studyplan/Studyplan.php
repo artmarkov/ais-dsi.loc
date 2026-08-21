@@ -76,6 +76,7 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
 // Шаблоны документов
     const template_csf = 'document/contract_student_free_2.docx';
+    const template_csf_add = 'document/contract_student_free_add.docx';
     const template_cs = 'document/contract_student_new.docx';
     const template_sr = 'document/studyplan_reference.docx';
     const template_cs_mk = 'document/contract_student_new-mk.docx';

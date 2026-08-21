@@ -256,6 +256,7 @@ class DefaultController extends MainController
         }
         if (Yii::$app->request->post('submitAction') == 'doc_contract' ||
             Yii::$app->request->post('submitAction') == 'doc_contract_add' ||
+            Yii::$app->request->post('submitAction') == 'doc_contract_free_add' ||
             Yii::$app->request->post('submitAction') == 'doc_statement' ||
             Yii::$app->request->post('submitAction') == 'doc_studyplan_reference') {
             if (!isset($model->parent) || !$model->doc_date || !$model->doc_contract_start || !$model->doc_contract_end) {
@@ -271,6 +272,10 @@ class DefaultController extends MainController
             }
         } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
             $model->makeDocx(Studyplan::template_ss);
+        } elseif (Yii::$app->request->post('submitAction') == 'doc_contract_free_add') {
+            if ($model->subject_form_id != 1001) {
+                $model->makeDocx(Studyplan::template_csf_add);
+            }
         } elseif (Yii::$app->request->post('submitAction') == 'doc_contract_add') {
             $model->makeDocx(Studyplan::template_cs, true);
         } elseif (Yii::$app->request->post('submitAction') == 'doc_studyplan_reference') {
