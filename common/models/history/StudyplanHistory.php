@@ -30,6 +30,7 @@ class StudyplanHistory extends BaseHistory
             'description',
             'status',
             'status_reason',
+            'doc_date',
         ];
     }
 

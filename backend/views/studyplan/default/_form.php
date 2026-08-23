@@ -523,6 +523,9 @@ JS
                             <div class="form-group btn-group">
                                 <?php if (!$model->isNewRecord): ?>
                                     <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать договор', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'doc_contract']); ?>
+                                    <?php if ($model->subject_form_id != 1001): ?>
+                                    <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать доп.соглашение', ['class' => 'btn btn-sm btn-primary', 'name' => 'submitAction', 'value' => 'doc_contract_free_add']); ?>
+                                    <?php endif; ?>
                                     <?php if ($model->isAdditionalContract()): ?>
                                         <?= Html::submitButton('<i class="fa fa-file-word-o" aria-hidden="true"></i> Скачать дополнительный договор', ['class' => 'btn btn-sm btn-default', 'name' => 'submitAction', 'value' => 'doc_contract_add']); ?>
                                     <?php endif; ?>
