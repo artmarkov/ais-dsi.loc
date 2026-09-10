@@ -2,6 +2,7 @@
 
 use artsoft\auth\assets\AvatarAsset;
 use artsoft\mailbox\models\MailboxInbox;
+use artsoft\models\User;
 use frontend\assets\AppAsset;
 use frontend\assets\ThemeAsset;
 use artsoft\assets\MetisMenuAsset;
@@ -11,6 +12,7 @@ use artsoft\widgets\LanguageSelector;
 use artsoft\widgets\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
+use yii\web\ForbiddenHttpException;
 use yii\widgets\Breadcrumbs;
 use common\widgets\Alert;
 
@@ -82,11 +84,13 @@ AvatarAsset::register($this);
                 'linkOptions' => ['title' => 'Профиль пользователя'],
                 'visible' => true
             ];
-            $menuItems[] = [
-                'label' => '<i class="fa fa-envelope-o" style="margin-right: 5px;"></i>' . MailboxInbox::getLabelNewMail(),
-                'url' => '/mailbox/default/index',
-                'visible' => true
-            ];
+            if (!User::hasRole(['parents','student'])) {
+                $menuItems[] = [
+                    'label' => '<i class="fa fa-envelope-o" style="margin-right: 5px;"></i>' . MailboxInbox::getLabelNewMail(),
+                    'url' => '/mailbox/default/index',
+                    'visible' => true
+                ];
+            }
             if (!Yii::$app->session->has(DefaultController::ORIGINAL_USER_SESSION_KEY)) {
                 $menuItems[] = [
                     'label' => '<i class="fa fa-sign-out" style="margin-right: 5px;"></i>' . Yii::t('art/auth', 'Logout'),
@@ -107,7 +111,7 @@ AvatarAsset::register($this);
             $menuItems[] = [
                 'label' => '<i class="fa fa-cogs"></i>',
                 'url' => \yii\helpers\Url::to(['/admin']),
-                'visible' => \artsoft\models\User::hasRole(['developer','system','administrator']),
+                'visible' => \artsoft\models\User::hasRole(['developer', 'system', 'administrator']),
             ];
         }
         echo Nav::widget([
@@ -127,7 +131,7 @@ AvatarAsset::register($this);
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
-<!--                    --><?//= Alert::widget() ?>
+                    <!--                    --><? //= Alert::widget() ?>
                     <?= \yii2mod\notify\BootstrapNotify::widget([
                         'clientOptions' => [
                             'offset' => [

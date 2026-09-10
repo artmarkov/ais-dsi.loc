@@ -21,6 +21,7 @@ use common\models\students\StudentDependence;
 use common\models\studyplan\search\StudyplanSearch;
 use common\models\studyplan\search\StudyplanViewSearch;
 use common\models\studyplan\Studyplan;
+use common\models\studyplan\StudyplanCertDoc;
 use common\models\studyplan\StudyplanSubject;
 use common\models\subject\SubjectType;
 use common\models\forms\FindingForm;
@@ -632,7 +633,11 @@ class DefaultController extends MainController
                     }
                 }
             }
-            if (Yii::$app->request->post('submitAction') == 'doc_contract' || Yii::$app->request->post('submitAction') == 'doc_statement') {
+            if (Yii::$app->request->post('submitAction') == 'doc_contract' ||
+                Yii::$app->request->post('submitAction') == 'doc_contract_add' ||
+                Yii::$app->request->post('submitAction') == 'doc_contract_free_add' ||
+                Yii::$app->request->post('submitAction') == 'doc_statement' ||
+                Yii::$app->request->post('submitAction') == 'doc_studyplan_reference') {
                 if (!isset($model->parent) || !$model->doc_date || !$model->doc_contract_start || !$model->doc_contract_end) {
                     Yii::$app->session->setFlash('danger', 'Заполните поля раздела "Документы"');
                     return $this->getSubmitAction($model);
@@ -640,12 +645,23 @@ class DefaultController extends MainController
             }
             if (Yii::$app->request->post('submitAction') == 'doc_contract') {
                 if ($model->subject_form_id != 1001) {
-                    $model->makeDocx(Studyplan::template_csf);
+                    $model->mat_capital_flag != 1 ? $model->makeDocx(Studyplan::template_csf) : $model->makeDocx(Studyplan::template_cs_mk);
                 } else {
-                    !$model->mat_capital_flag ? $model->makeDocx(Studyplan::template_cs) : $model->makeDocx(Studyplan::template_cs_mk);
+                    $model->mat_capital_flag != 1 ? $model->makeDocx(Studyplan::template_cs) : $model->makeDocx(Studyplan::template_cs_mk);
                 }
             } elseif (Yii::$app->request->post('submitAction') == 'doc_statement') {
                 $model->makeDocx(Studyplan::template_ss);
+            } elseif (Yii::$app->request->post('submitAction') == 'doc_contract_free_add') {
+                if ($model->subject_form_id != 1001) {
+                    $model->makeDocx(Studyplan::template_csf_add);
+                }
+            } elseif (Yii::$app->request->post('submitAction') == 'doc_contract_add') {
+                $model->makeDocx(Studyplan::template_cs, true);
+            } elseif (Yii::$app->request->post('submitAction') == 'doc_studyplan_reference') {
+                $model->makeDocx(Studyplan::template_sr);
+            } elseif (Yii::$app->request->post('submitAction') == 'doc_studyplan_certificate') {
+                $modelDoc = StudyplanCertDoc::getData($model);
+                $modelDoc->makeDocx();
             }
             return $this->render('/studyplan/default/_form', [
                 'model' => $model,

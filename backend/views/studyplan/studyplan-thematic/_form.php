@@ -56,6 +56,11 @@ $readonly = in_array($model->doc_status, [1, 2]) && \artsoft\Art::isFrontend() ?
                 <div class="row">
                     <div class="col-sm-12">
                         <?php
+                        echo \yii\bootstrap\Alert::widget([
+                            'body' => '<i class="fa fa-info-circle"></i> Используйте сохраненные шаблоны планов. После выбора шаблона нажмите кнопку сохранить. Строки элементов плана встанут автоматически',
+                            'options' => ['class' => 'alert-info'],
+                        ]);
+
                         echo Html::activeHiddenInput($model, 'subject_sect_studyplan_id');
                         echo Html::activeHiddenInput($model, 'studyplan_subject_id');
                         if ($model->isNewRecord) {

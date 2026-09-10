@@ -14,7 +14,7 @@ use common\models\teachers\Teachers;
 
 $this->title = Yii::t('art/studyplan', 'Thematic plans');
 $this->params['breadcrumbs'][] = $this->title;
-
+$teachersList = RefBook::find('teachers_fio')->getList();
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -73,9 +73,9 @@ $columns = [
     ],
     [
         'attribute' => 'doc_sign_teachers_id',
-        'filter' => RefBook::find('teachers_fio')->getList(),
-        'value' => function (StudyplanThematic $model) {
-            return RefBook::find('teachers_fio')->getValue($model->doc_sign_teachers_id);
+        'filter' => $teachersList,
+        'value' => function (StudyplanThematic $model) use ($teachersList) {
+            return $teachersList[$model->doc_sign_teachers_id] ?? '';
         },
         'options' => ['style' => 'width:150px'],
         'format' => 'raw',
@@ -276,7 +276,7 @@ $columns = [
 <div class="teachers-thematic-index">
     <div class="panel">
         <div class="panel-heading">
-            Тематические/репертуарные планы: <?php echo RefBook::find('teachers_fullname')->getValue($model->id); ?>
+            Тематические/репертуарные планы: <?php echo $teachersList[$model->id]; ?>
         </div>
         <div class="panel-body">
             <?= $this->render('_search', compact('model_date')) ?>

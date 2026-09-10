@@ -338,7 +338,7 @@ class DefaultController extends MainController
                 $searchName => [
                     'studyplan_id' => $model_date->studyplan_id,
                     'plan_year' => $model_date->plan_year,
-                    'status' => Studyplan::STATUS_ACTIVE,
+                    /*'status' => Studyplan::STATUS_ACTIVE,*/
                 ]
             ]);
             $dataProvider = $searchModel->search($params);

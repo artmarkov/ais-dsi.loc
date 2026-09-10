@@ -34,7 +34,7 @@ $teachers_list = RefBook::find('teachers_fio')->getList();
                                     <?php foreach (\artsoft\helpers\ArtHelper::getWeekdayList() as $item => $weekDay): ?>
                                         <td class="text-center" style="min-width: 100px">
                                             <?php if (isset($data[$auditory->id][$item])): ?>
-                                                <?= $this->render('_table-item', ['dataItem' => $data[$auditory->id][$item], 'weekDay' => $weekDay, 'auditory' => $auditory, 'teachers_list' => $teachers_list]) ?>
+                                                <?= $this->render('_table-item', ['dataItem' => $data[$auditory->id][$item], 'weekDay' => $weekDay, 'auditory' => $auditory, 'teachers_list' => $teachers_list, 'studyplanSubjects' => $studyplanSubjects]) ?>
                                             <?php endif; ?>
 
                                         </td>

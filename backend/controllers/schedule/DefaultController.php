@@ -5,12 +5,14 @@ namespace backend\controllers\schedule;
 use artsoft\helpers\RefBook;
 use artsoft\helpers\Schedule;
 use common\models\auditory\Auditory;
+use common\models\schedule\ScheduleNetView;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\Studyplan;
 use common\models\studyplan\StudyplanSubjectHist;
 use common\models\teachers\TeachersLoad;
 use common\models\teachers\TeachersPlan;
 use Yii;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -24,31 +26,23 @@ class DefaultController extends MainController
     {
         $this->view->params['breadcrumbs'][] = 'Расписание занятий';
         $model_date = $this->modelDate;
+        $model_date->addRule(['course','education_cat_id','programm_id'], 'safe');
 
-        $models = (new Query())->from('schedule_net_view')
-            ->where(['=', 'plan_year', $model_date->plan_year])
-            ->andWhere(['IS NOT', 'auditory_id', null])
-            /*->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])*/;
+        if(Yii::$app->request->post('submitAction') == 'send') {
+            if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
 
-        if ($model_date->teachers_id) {
-            $models = $models->andWhere(['=', 'teachers_id', $model_date->teachers_id]);
+            }
         }
-        if ($model_date->auditory_id) {
-            $models = $models->andWhere(['=', 'auditory_id', $model_date->auditory_id]);
-        }
-        $models = $models->all();
-        $data = ArrayHelper::index($models, null, ['auditory_id', 'week_day', 'time_in']);
-        $modelsAuditory = Auditory::find()->joinWith('cat')->where(['=', 'study_flag', true]);
+       $model = ScheduleNetView::getData($model_date);
+        $data = $model->getTeachersSchedule();
+        $modelsAuditory = $model->getAuditoryModels();
+        $studyplanSubjects = $model->getStudyplanSubjectAll();
 
-        if ($model_date->auditory_id) {
-            $modelsAuditory = $modelsAuditory->andWhere(['=', 'auditory.id', $model_date->auditory_id]);
-        }
-        $modelsAuditory = $modelsAuditory->orderBy(['sort_order' => SORT_ASC])->all();
-
-//        echo '<pre>' . print_r($data, true) . '</pre>'; die();
-        return $this->renderIsAjax('index', compact('model_date', 'data', 'modelsAuditory'));
+      //  echo '<pre>' . print_r(Yii::$app->request->post(), true) . '</pre>'; die();
+        return $this->renderIsAjax('index', compact('model_date', 'data', 'modelsAuditory', 'studyplanSubjects'));
 
     }
+
     /**
      * @return mixed
      */

@@ -17,7 +17,8 @@ class StudyplanStat
     const OPTIONS_FIELDS = [
         'student_created_at' => 'Дата создания учетной записи',
         'studyplan_created_at' => 'Дата создания плана',
-        'student_id' => 'ФЛС',
+        'student_id' => 'ФЛС ученика',
+        'statement_num' => 'Номер договора',
         'student_fio' => 'ФИО ученика',
         'student_last_name' => 'Фамилия ученика',
         'student_first_name' => 'Имя ученика',
@@ -196,6 +197,9 @@ class StudyplanStat
                 break;
             case 'finish_flag' :
                 return $model['course'] == $model['education_programm_term_mastering'] || $model['early_flag'] == 1 ? 'Да' : 'Нет';
+                break;
+             case 'statement_num' :
+                return sprintf('%06d', $model['student_id']) . '-' . date('y', $model['doc_date']);
                 break;
             default :
                 return $model[$option];

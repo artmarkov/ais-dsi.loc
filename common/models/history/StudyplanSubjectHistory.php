@@ -23,6 +23,7 @@ class StudyplanSubjectHistory extends BaseHistory
             'subject_cat_id',
             'subject_id',
             'subject_type_id',
+            'subject_vid_id',
             'week_time',
             'year_time',
             'cost_hour',
@@ -44,11 +45,13 @@ class StudyplanSubjectHistory extends BaseHistory
     {
         switch ($name) {
             case 'subject_cat_id':
-                return isset($model->subject_cat_id) ? $model->subjectCat->name : $value;
+                return isset($model->subject_cat_id) ? $model->subjectCat->name . '(' . $model->subject->name . ')': $value;
             case 'subject_id':
                 return isset($model->subject_id) ? $model->subject->name : $value;
             case 'subject_type_id':
-                return isset($model->subject_type_id) ? $model->subjectType->name : $value;
+                return isset($model->subject_type_id) ? $model->subjectType->name . '(' . $model->subject->name . ')': $value;
+            case 'subject_vid_id':
+                return isset($model->subject_vid_id) ? $model->subjectVid->name . '(' . $model->subject->name . ')': $value;
             case 'med_cert':
                 return isset($model->med_cert) ? ($model->med_cert ? 'Yes' : 'No') : $value;
             case 'fin_cert':

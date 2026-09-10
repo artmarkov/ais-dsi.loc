@@ -2,6 +2,7 @@
 
 namespace artsoft\helpers;
 
+use artsoft\models\User;
 use artsoft\widgets\Notice;
 use common\models\schedule\SubjectScheduleView;
 use common\models\studyplan\Studyplan;
@@ -9,6 +10,7 @@ use common\models\studyplan\StudyplanSubjectHist;
 use yii\helpers\ArrayHelper;
 use Yii;
 use artsoft\widgets\Tooltip;
+use yii\web\ForbiddenHttpException;
 
 /**
  * Class NoticeDisplay
@@ -23,13 +25,13 @@ class NoticeDisplay
     protected $teachersIds;
     protected $auditoryPlan;
     protected $subjectScheduleIds;
-    protected $teachersLoadData;
-    protected $scheduleOverLapping;
-    protected $teachersOverLapping;
-    protected $teachersPlanScheduleOverLapping;
-    protected $studentScheduleOverLapping;
-    protected $studentScheduleOverPause;
-    protected $scheduleAccompLimit;
+    protected $teachersLoadData = [];
+    protected $scheduleOverLapping = [];
+    protected $teachersOverLapping = [];
+    protected $teachersPlanScheduleOverLapping = [];
+    protected $studentScheduleOverLapping = [];
+    protected $studentScheduleOverPause = [];
+    protected $scheduleAccompLimit = [];
 
     public static function getData($models, $plan_year)
     {
@@ -349,7 +351,7 @@ class NoticeDisplay
     }
 
     /**
-     * Ученик должен иметь перерыв в разных аудиториях 10 мин (600 сек)!
+     * Ученик должен иметь перерыв 10 мин (600 сек) независимо от аудитории (убрал AND a.auditory_id != b.auditory_id)!
      * @param $plan_year
      * @return array
      * @throws \yii\db\Exception
@@ -359,8 +361,7 @@ class NoticeDisplay
         $thereIsAnOverlapping = \Yii::$app->db->createCommand('SELECT b.subject_schedule_id, a.week_num, a.week_day, 
                               a.time_in, a.time_out, a.auditory_id, a.sect_name, a.subject, a.student_fio
 	                        FROM subject_schedule_studyplan_view a, subject_schedule_studyplan_view b 
-	                        WHERE a.subject_schedule_id != b.subject_schedule_id
-							AND a.auditory_id != b.auditory_id 
+	                        WHERE a.subject_schedule_id != b.subject_schedule_id 
 							AND a.direction_id = 1000
 							AND a.direction_id = b.direction_id
 							AND a.week_num = b.week_num
@@ -435,6 +436,9 @@ class NoticeDisplay
      */
     public function getScheduleNotice($model)
     {
+        if(User::hasRole(['parents','student'], false)) {
+           return '';
+        }
        // echo '<pre>' . print_r( $model, true) . '</pre>'; die();
         $string = [];
         $string[] = $this->getTeachersOverLoadNotice($model);

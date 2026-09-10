@@ -2,6 +2,7 @@
 
 namespace artsoft\helpers;
 
+use artsoft\models\User;
 use artsoft\widgets\Notice;
 use common\models\schedule\ConsultScheduleView;
 use yii\helpers\ArrayHelper;
@@ -126,6 +127,9 @@ class NoticeConsultDisplay
     public function getConsultOverLoopingNotice($model)
     {
         $tooltip = [];
+        if(User::hasRole(['parents','student'], false)) {
+            return '';
+        }
         if (!$model->consult_schedule_id) {
             return null;
         }

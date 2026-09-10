@@ -19,7 +19,7 @@
                 <td><?= $val['week_num'] != 0 ? $val['week_num'] . ' нед. ' . Schedule::decodeTime($val['time_in']) : Schedule::decodeTime($val['time_in']) ?>
                     <?= '-' . Schedule::decodeTime($val['time_out']) ?>
                 </td>
-                <td><?= $val['sect_name'] ?></td>
+                <td><?= $val['sect_name'] . ($val['sect_name'] != 'Планирование' ? \common\models\schedule\ScheduleNetView::getSectNotice($val['subject_sect_studyplan_id'], $val['studyplan_subject_list'], $studyplanSubjects) : ''); ?></td>
                 <td><?= $val['subject'] ?></td>
                 <td>
             <?php endif; ?>

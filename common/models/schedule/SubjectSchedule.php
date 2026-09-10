@@ -291,9 +291,11 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
         $ids = \yii\helpers\ArrayHelper::getColumn($modelsSubjectSectStudyplan, 'id');
         $ids = array_filter($ids);
         $models = SubjectSchedule::find()
-            ->select('subject_sect_studyplan_id,week_num,week_day,time_in,time_out')
+            ->select(['subject_sect_studyplan_id','week_num','week_day','time_in','time_out','concat(user_common.last_name, \' \', "left"(user_common.first_name::text, 1), \'.\', "left"(user_common.middle_name::text, 1), \'.\') AS teachers_fio'])
             ->innerJoin('teachers_load', 'teachers_load.id = subject_schedule.teachers_load_id')
             ->innerJoin('guide_teachers_direction', 'guide_teachers_direction.id = teachers_load.direction_id')
+            ->leftJoin('teachers', 'teachers.id = teachers_load.teachers_id')
+            ->leftJoin('user_common', 'user_common.id = teachers.user_common_id')
             ->where(
                 ['AND',
                     ['subject_sect_studyplan_id' => $ids],
@@ -302,11 +304,13 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
             ->andWhere(['is', 'guide_teachers_direction.parent', null])
             ->asArray()
             ->all();
+//        echo '<pre>' . print_r($models, true) . '</pre>'; die();
         $models = ArrayHelper::index($models, null, 'subject_sect_studyplan_id');
         foreach ($models as $subject_sect_studyplan_id => $model) {
             $string[$subject_sect_studyplan_id] = '';
             foreach ($model as $itm => $m) {
                 $s = ' ' . \artsoft\helpers\ArtHelper::getWeekValue('short', $m['week_num']) . ' ' . \artsoft\helpers\ArtHelper::getWeekdayValue('short', $m['week_day']) . ' ' . Schedule::decodeTime($m['time_in']) . '-' . Schedule::decodeTime($m['time_out']) . ' ';
+                $s .= '[' . $m['teachers_fio'] . ']' ?? '';
                 $string[$subject_sect_studyplan_id] .= $s;
             }
         }
@@ -342,29 +346,36 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
     // Автоматическое добавление расписания для концертмейтера
     public function beforeSave($insert)
     {
+        // Получаем старые значения
+        $oldValues = $this->getOldAttributes();
+
         if (parent::beforeSave($insert)) {
-            if ($insert) {
-                $model = TeachersLoad::find()
-                    ->where(['=', 'id', $this->teachers_load_id])
-                    ->andWhere(['=', 'direction_id', 1000])
+            $model = TeachersLoad::find()
+                ->where(['=', 'id', $this->teachers_load_id])
+                ->andWhere(['=', 'direction_id', 1000])
+                ->one();
+            if ($model) {
+                $modelFind = TeachersLoad::find()
+                    ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
+                    ->andWhere(['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id])
+                    ->andWhere(['=', 'load_time', $model->load_time])
+                    ->andWhere(['=', 'direction_id', 1001])
                     ->one();
-                if ($model) {
-                    $modelFind = TeachersLoad::find()
-                        ->where(['=', 'studyplan_subject_id', $model->studyplan_subject_id])
-                        ->andWhere(['=', 'subject_sect_studyplan_id', $model->subject_sect_studyplan_id])
-                        ->andWhere(['=', 'load_time', $model->load_time])
-                        ->andWhere(['=', 'direction_id', 1001])
-                        ->one();
-                    if ($modelFind) {
-                        $m = new SubjectSchedule();
-                        $m->teachers_load_id = $modelFind->id;
-                        $m->week_num = $this->week_num;
-                        $m->week_day = $this->week_day;
-                        $m->time_in = Schedule::decodeTime($this->time_in);
-                        $m->time_out = Schedule::decodeTime($this->time_out);
-                        $m->auditory_id = $this->auditory_id;
-                        $m->save(false);
-                    }
+                if ($modelFind) {
+                    $m = $insert ? new SubjectSchedule() : (SubjectSchedule::find()
+                            ->where(['=', 'teachers_load_id', $modelFind->id])
+                            ->andWhere(['=', 'week_num', $oldValues['week_num']])
+                            ->andWhere(['=', 'time_in', Schedule::encodeTime($oldValues['time_in'])])
+                            ->andWhere(['=', 'time_out', Schedule::encodeTime($oldValues['time_out'])])
+                            ->andWhere(['=', 'auditory_id', $oldValues['auditory_id']])
+                            ->one() ?? new SubjectSchedule());
+                    $m->teachers_load_id = $modelFind->id;
+                    $m->week_num = $this->week_num;
+                    $m->week_day = $this->week_day;
+                    $m->time_in = Schedule::decodeTime($this->time_in);
+                    $m->time_out = Schedule::decodeTime($this->time_out);
+                    $m->auditory_id = $this->auditory_id;
+                    $m->save(false);
                 }
             }
             return true;
