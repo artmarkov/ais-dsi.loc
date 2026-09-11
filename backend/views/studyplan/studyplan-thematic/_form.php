@@ -35,6 +35,20 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
 $this->registerJs($js);
 
 $readonly = in_array($model->doc_status, [1, 2]) && \artsoft\Art::isFrontend() ? true : $readonly;
+$subject = '';
+if($model->studyplan_subject_id != 0) {
+    $subject = Yii::$app->db->createCommand(' select concat(subject, \'[\', sect_name, \']\')
+                    FROM studyplan_thematic_view 
+                    where  studyplan_subject_id = :studyplan_subject_id ',
+        ['studyplan_subject_id' => $model->studyplan_subject_id,
+        ])->queryScalar();
+} else {
+    $subject = Yii::$app->db->createCommand(' select concat(subject, \'[\', sect_name, \']\')
+                    FROM studyplan_thematic_view 
+                    where subject_sect_studyplan_id = :subject_sect_studyplan_id',
+        ['subject_sect_studyplan_id' => $model->subject_sect_studyplan_id,
+        ])->queryScalar();
+}
 ?>
 
     <div class="studyplan-thematic-form">
@@ -49,8 +63,9 @@ $readonly = in_array($model->doc_status, [1, 2]) && \artsoft\Art::isFrontend() ?
         <div class="panel">
             <div class="panel-heading">
                 Тематический/репертуарный план:
-                <?php echo RefBook::find('subject_memo_4')->getValue($model->studyplan_subject_id); ?>
-                <?php echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id); ?>
+                <?php //echo RefBook::find('subject_memo_4')->getValue($model->studyplan_subject_id); ?>
+                <?php //echo RefBook::find('sect_name_1')->getValue($model->subject_sect_studyplan_id); ?>
+                <?php echo $subject; ?>
             </div>
             <div class="panel-body">
                 <div class="row">
