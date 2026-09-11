@@ -10,6 +10,20 @@ use artsoft\widgets\ActiveForm;
 /* @var $form artsoft\widgets\ActiveForm */
 
 $readonly = false;
+$subject = '';
+if($teachersLoadModel->studyplan_subject_id != 0) {
+    $subject = Yii::$app->db->createCommand(' select concat(subject, \'[\', sect_name, \']\')
+                    FROM consult_schedule_studyplan_view 
+                    where  studyplan_subject_id = :studyplan_subject_id ',
+        ['studyplan_subject_id' => $teachersLoadModel->studyplan_subject_id,
+        ])->queryScalar();
+} else {
+    $subject = Yii::$app->db->createCommand(' select concat(subject, \'[\', sect_name, \']\')
+                    FROM consult_schedule_studyplan_view 
+                    where subject_sect_studyplan_id = :subject_sect_studyplan_id',
+        ['subject_sect_studyplan_id' => $teachersLoadModel->subject_sect_studyplan_id,
+        ])->queryScalar();
+}
 ?>
 
 <div class="teachers-plan-form">
@@ -24,8 +38,9 @@ $readonly = false;
     <div class="panel">
         <div class="panel-heading">
             Элемент расписания консультаций:
-            <?php echo RefBook::find('subject_memo_4')->getValue($teachersLoadModel->studyplan_subject_id); ?>
-            <?php echo RefBook::find('sect_name_1')->getValue($teachersLoadModel->subject_sect_studyplan_id); ?>
+            <?php //echo RefBook::find('subject_memo_4')->getValue($teachersLoadModel->studyplan_subject_id); ?>
+            <?php //echo RefBook::find('sect_name_1')->getValue($teachersLoadModel->subject_sect_studyplan_id); ?>
+            <?php echo $subject; ?>
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>
