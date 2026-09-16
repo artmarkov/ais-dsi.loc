@@ -65,19 +65,19 @@ class Schedule
             case ($astr_hour == 0):
                 $academ_hour = 0;
                 break;
-            case in_array($astr_hour, range(525, 900)):
+            case in_array($astr_hour, range(525, 975)):
                 $academ_hour = 0.25;
                 break;
-            case in_array($astr_hour, range(1200, 1500)):
+            case in_array($astr_hour, range(1050, 1650)):
                 $academ_hour = 0.5;
                 break;
-            case in_array($astr_hour, range(1800, 2325)):
+            case in_array($astr_hour, range(1725, 2325)):
                 $academ_hour = 0.75;
                 break;
-            case in_array($astr_hour, range(2550, 2850)):
+            case in_array($astr_hour, range(2400, 3000)):
                 $academ_hour = 1;
                 break;
-            case in_array($astr_hour, range(3225, 3650)):
+            case in_array($astr_hour, range(3075, 3675)):
                 $academ_hour = 1.25;
                 break;
             case in_array($astr_hour, range(3750, 4350)):
@@ -86,10 +86,10 @@ class Schedule
             case in_array($astr_hour, range(4425, 5025)):
                 $academ_hour = 1.75;
                 break;
-            case in_array($astr_hour, range(5400, 5700)):
+            case in_array($astr_hour, range(5100, 5700)):
                 $academ_hour = 2;
                 break;
-            case in_array($astr_hour, range(6000, 6375)):
+            case in_array($astr_hour, range(5775, 6375)):
                 $academ_hour = 2.25;
                 break;
             case in_array($astr_hour, range(6450, 7050)):

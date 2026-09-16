@@ -175,9 +175,9 @@ class StudyplanThematic extends \artsoft\db\ActiveRecord
             ->where(['is not', 'template_name', null])
             ->andWhere(['id' => array_unique($ids)]);
 
-        if ($author_flag == 0 || ($author_flag == 2 && $this->subject_sect_studyplan_id == 0)) {
+       /* if ($author_flag == 0 || ($author_flag == 2 && $this->subject_sect_studyplan_id == 0)) {
             $models = $models->andWhere(['=', 'author_id', $userId]);
-        }
+        }*/
         $models = $models->orderBy('template_name')->all();
 
         return \yii\helpers\ArrayHelper::map($models, 'id', 'template_name');
