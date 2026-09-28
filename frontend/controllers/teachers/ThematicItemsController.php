@@ -35,7 +35,7 @@ class ThematicItemsController extends MainController
         $params[$searchName]['plan_year'] = $model_date->plan_year;
         $dataProvider = $searchModel->search($params);
 
-        return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel',  'model_date', 'model'));
+        return $this->renderIsAjax('thematic-items', compact('dataProvider', 'searchModel', 'model_date', 'model'));
 
     }
 
@@ -55,36 +55,42 @@ class ThematicItemsController extends MainController
         $model->studyplan_subject_id = Yii::$app->request->get('studyplan_subject_id') ?? 0;
         $model->subject_sect_studyplan_id = Yii::$app->request->get('subject_sect_studyplan_id') ?? 0;
 
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->post('submitAction') == 'send_approve' && !$model->doc_sign_teachers_id) {
+            $model->addError('doc_sign_teachers_id', 'Необходимо заполнить «Подписант документа».');
+        } else {
 
-            $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
-            Model::loadMultiple($modelsItems, Yii::$app->request->post());
+            if ($model->load(Yii::$app->request->post())) {
 
-            // validate all models
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsItems) && $valid;
-            //$valid = true;
-            if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
+                $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
 
-                    if ($flag = $model->save(false)) {
-                        foreach ($modelsItems as $modelItems) {
-                            $modelItems->studyplan_thematic_id = $model->id;
-                            if (!($flag = $modelItems->save(false))) {
-                                $transaction->rollBack();
-                                break;
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+                //$valid = true;
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+
+                        if ($flag = $model->save(false)) {
+                            foreach ($modelsItems as $modelItems) {
+                                $modelItems->studyplan_thematic_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if ($flag) {
-                        $transaction->commit();
-                        $this->getSubmitAction($model);
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        print_r($e->errorInfo);
+                        $transaction->rollBack();
                     }
-                } catch (Exception $e) {
-                    print_r($e->errorInfo);
-                    $transaction->rollBack();
                 }
             }
         }
@@ -123,53 +129,59 @@ class ThematicItemsController extends MainController
         }
         $modelsItems = $model->studyplanThematicItems;
 
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->post('submitAction') == 'send_approve' && !$model->doc_sign_teachers_id) {
+            $model->addError('doc_sign_teachers_id', 'Необходимо заполнить «Подписант документа».');
+        } else {
 
-            if (Yii::$app->request->post('submitAction') == 'send_approve') {
-                $model->doc_status = StudyplanThematic::DOC_STATUS_WAIT;
-            } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-                $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
-            }
+            if ($model->load(Yii::$app->request->post())) {
 
-            $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
-            $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
-            Model::loadMultiple($modelsItems, Yii::$app->request->post());
-            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+                if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_WAIT;
+                } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                    $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
+                }
 
-            // validate all models
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsItems) && $valid;
+                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+                $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
+                Model::loadMultiple($modelsItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
 
-            if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    if (Yii::$app->request->post('submitAction') == 'send_approve') {
-                        $model->doc_status = StudyplanThematic::DOC_STATUS_WAIT;
-                        if ($model->sendApproveMessage()) {
-                            Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelsItems) && $valid;
+
+
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if (Yii::$app->request->post('submitAction') == 'send_approve') {
+                            $model->doc_status = StudyplanThematic::DOC_STATUS_WAIT;
+                            if ($model->sendApproveMessage()) {
+                                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                            }
+                        } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
+                            $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
                         }
-                    } elseif (Yii::$app->request->post('submitAction') == 'make_changes') {
-                        $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
-                    }
-                    if ($flag = $model->save(false)) {
-                        if (!empty($deletedIDs)) {
-                            StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);
-                        }
-                        foreach ($modelsItems as $modelItems) {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsItems as $modelItems) {
 
-                            $modelItems->studyplan_thematic_id = $model->id;
-                            if (!($flag = $modelItems->save(false))) {
-                                $transaction->rollBack();
-                                break;
+                                $modelItems->studyplan_thematic_id = $model->id;
+                                if (!($flag = $modelItems->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
                             }
                         }
+                        if ($flag) {
+                            $transaction->commit();
+                            $this->getSubmitAction($model);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
                     }
-                    if ($flag) {
-                        $transaction->commit();
-                        $this->getSubmitAction($model);
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
                 }
             }
         }

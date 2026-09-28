@@ -630,49 +630,53 @@ class DefaultController extends MainController
                 throw new NotFoundHttpException("The StudyplanThematic was not found.");
             }
             $modelsItems = $model->studyplanThematicItems;
-            if ($model->load(Yii::$app->request->post())) {
+            if ((Yii::$app->request->post('submitAction') == 'approve' || Yii::$app->request->post('submitAction') == 'modif') && !$model->doc_sign_teachers_id) {
+                $model->addError('doc_sign_teachers_id', 'Необходимо заполнить «Подписант документа».');
+            } else {
+                if ($model->load(Yii::$app->request->post())) {
 
-                $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
-                $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
-                Model::loadMultiple($modelsItems, Yii::$app->request->post());
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
+                    $oldIDs = ArrayHelper::map($modelsItems, 'id', 'id');
+                    $modelsItems = Model::createMultiple(StudyplanThematicItems::class, $modelsItems);
+                    Model::loadMultiple($modelsItems, Yii::$app->request->post());
+                    $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsItems, 'id', 'id')));
 
-                // validate all models
-                $valid = $model->validate();
-                $valid = Model::validateMultiple($modelsItems) && $valid;
+                    // validate all models
+                    $valid = $model->validate();
+                    $valid = Model::validateMultiple($modelsItems) && $valid;
 
-                if ($valid) {
-                    $transaction = \Yii::$app->db->beginTransaction();
-                    try {
-                        if (Yii::$app->request->post('submitAction') == 'approve') {
-                            $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
-                            if ($model->approveMessage()) {
-                                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
-                            }
-                        } elseif (Yii::$app->request->post('submitAction') == 'modif') {
-                            $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
-                            if ($model->modifMessage()) {
-                                Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
-                            }
-                        }
-                        if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);
-                            }
-                            foreach ($modelsItems as $modelItems) {
-                                $modelItems->studyplan_thematic_id = $model->id;
-                                if (!($flag = $modelItems->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
+                    if ($valid) {
+                        $transaction = \Yii::$app->db->beginTransaction();
+                        try {
+                            if (Yii::$app->request->post('submitAction') == 'approve') {
+                                $model->doc_status = StudyplanThematic::DOC_STATUS_AGREED;
+                                if ($model->approveMessage()) {
+                                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
+                                }
+                            } elseif (Yii::$app->request->post('submitAction') == 'modif') {
+                                $model->doc_status = StudyplanThematic::DOC_STATUS_MODIF;
+                                if ($model->modifMessage()) {
+                                    Yii::$app->session->setFlash('info', Yii::t('art/mailbox', 'Your mail has been posted.'));
                                 }
                             }
+                            if ($flag = $model->save(false)) {
+                                if (!empty($deletedIDs)) {
+                                    StudyplanThematicItems::deleteAll(['id' => $deletedIDs]);
+                                }
+                                foreach ($modelsItems as $modelItems) {
+                                    $modelItems->studyplan_thematic_id = $model->id;
+                                    if (!($flag = $modelItems->save(false))) {
+                                        $transaction->rollBack();
+                                        break;
+                                    }
+                                }
+                            }
+                            if ($flag) {
+                                $transaction->commit();
+                                $this->getSubmitAction($model);
+                            }
+                        } catch (Exception $e) {
+                            $transaction->rollBack();
                         }
-                        if ($flag) {
-                            $transaction->commit();
-                            $this->getSubmitAction($model);
-                        }
-                    } catch (Exception $e) {
-                        $transaction->rollBack();
                     }
                 }
             }
