@@ -25,6 +25,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $version
+ * @property int $time_duration
  *
  * @property TeachersLoad $teachersLoad
  */
@@ -35,6 +36,7 @@ class ConsultSchedule extends \yii\db\ActiveRecord
     public $date_in;
     public $time_in;
     public $time_out;
+    public $time_duration;
 
     /**
      * {@inheritdoc}
@@ -62,6 +64,10 @@ class ConsultSchedule extends \yii\db\ActiveRecord
 
     public function beforeValidate()
     {
+        if (preg_match('/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/', $this->time_in)) {
+            $this->time_out = Schedule::decodeTime(Schedule::encodeTime($this->time_in) + $this->time_duration);
+        }
+
         $this->datetime_in = $this->date_in . ' ' . $this->time_in;
         $this->datetime_out = $this->date_in . ' ' . $this->time_out;
         return parent::beforeValidate();
@@ -69,9 +75,11 @@ class ConsultSchedule extends \yii\db\ActiveRecord
 
     public function afterFind()
     {
+
         $this->date_in = Yii::$app->formatter->asDate($this->datetime_in);
         $this->time_in = Yii::$app->formatter->asDatetime($this->datetime_in, 'php:H:i');
         $this->time_out = Yii::$app->formatter->asDatetime($this->datetime_out, 'php:H:i');
+        $this->time_duration = ($this->datetime_out - $this->datetime_in);
         parent::afterFind();
     }
 
@@ -81,9 +89,10 @@ class ConsultSchedule extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['teachers_load_id', 'auditory_id', 'version'], 'integer'],
-            [['teachers_load_id', 'auditory_id'], 'required'],
+            [['teachers_load_id', 'auditory_id', 'version', 'time_duration'], 'integer'],
+            [['teachers_load_id', 'auditory_id', 'time_duration'], 'required'],
             [['date_in', 'time_in', 'time_out'], 'required'],
+            [['time_in', 'time_out'], 'checkFormatTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['datetime_in', 'datetime_out',], 'safe'],
             [['datetime_in', 'datetime_out'], 'checkFormatDateTime', 'skipOnEmpty' => false, 'skipOnError' => false],
             [['date_in'], 'compareTimestamp', 'skipOnEmpty' => false],
@@ -112,6 +121,13 @@ class ConsultSchedule extends \yii\db\ActiveRecord
         if ($this->getConsultScheduleOverLapping()) {
             $message = 'В одной аудитории накладка по времени!';
             $this->addError($attribute, $message);
+        }
+    }
+
+    public function checkFormatTime($attribute, $params)
+    {
+        if (!preg_match('/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/', $this->$attribute)) {
+            $this->addError($attribute, 'Формат ввода времени не верен.');
         }
     }
 
@@ -177,6 +193,7 @@ class ConsultSchedule extends \yii\db\ActiveRecord
             'date_in' => 'Дата консультации',
             'time_in' => 'Время начала',
             'time_out' => 'Время окончания',
+            'time_duration' => 'Продолжительность занятия',
         ];
     }
 

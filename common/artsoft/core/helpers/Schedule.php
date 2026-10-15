@@ -32,20 +32,38 @@ class Schedule
             case '1.5':
                 $astr_hour = 4200;
                 break;
+            case '1.75':
+                $astr_hour = 4800;
+                break;
             case '2':
                 $astr_hour = 5400;
+                break;
+            case '2.25':
+                $astr_hour = 6000;
                 break;
             case '2.5':
                 $astr_hour = 6900;
                 break;
+            case '2.75':
+                $astr_hour = 7500;
+                break;
             case '3':
                 $astr_hour = 8100;
+                break;
+            case '3.25':
+                $astr_hour = 9000;
+                break;
+            case '3.5':
+                $astr_hour = 9600;
+                break;
+            case '3.75':
+                $astr_hour = 10200;
                 break;
             case '4':
                 $astr_hour = 10800;
                 break;
             case '4.5':
-                $astr_hour = 12150;
+                $astr_hour = 12000;
                 break;
             default:
                 $astr_hour = round(($academ_hour * 2700), 2);
@@ -61,56 +79,57 @@ class Schedule
      */
     public static function astr2academ($astr_hour)
     {
+        $rate = 300;
         switch (true) {
             case ($astr_hour == 0):
                 $academ_hour = 0;
                 break;
-            case in_array($astr_hour, range(525, 975)):
+            case in_array($astr_hour, range(0.25*2700-$rate, 0.25*2700+$rate)):
                 $academ_hour = 0.25;
                 break;
-            case in_array($astr_hour, range(1050, 1650)):
+            case in_array($astr_hour, range(0.5*2700-$rate, 0.5*2700+$rate)):
                 $academ_hour = 0.5;
                 break;
-            case in_array($astr_hour, range(1725, 2325)):
+            case in_array($astr_hour, range(0.75*2700-$rate, 0.75*2700+$rate)):
                 $academ_hour = 0.75;
                 break;
-            case in_array($astr_hour, range(2400, 3000)):
+            case in_array($astr_hour, range(1*2700-$rate, 1*2700+$rate)):
                 $academ_hour = 1;
                 break;
-            case in_array($astr_hour, range(3075, 3675)):
+            case in_array($astr_hour, range(1.25*2700-$rate, 1.25*2700+$rate)):
                 $academ_hour = 1.25;
                 break;
-            case in_array($astr_hour, range(3750, 4350)):
+            case in_array($astr_hour, range(1.5*2700-$rate, 1.5*2700+$rate)):
                 $academ_hour = 1.5;
                 break;
-            case in_array($astr_hour, range(4425, 5025)):
+            case in_array($astr_hour, range(1.75*2700-$rate, 1.75*2700+$rate)):
                 $academ_hour = 1.75;
                 break;
-            case in_array($astr_hour, range(5100, 5700)):
+            case in_array($astr_hour, range(2*2700-$rate, 2*2700+$rate)):
                 $academ_hour = 2;
                 break;
-            case in_array($astr_hour, range(5775, 6375)):
+            case in_array($astr_hour, range(2.25*2700-$rate, 2.25*2700+$rate)):
                 $academ_hour = 2.25;
                 break;
-            case in_array($astr_hour, range(6450, 7050)):
+            case in_array($astr_hour, range(2.5*2700-$rate, 2.5*2700+$rate)):
                 $academ_hour = 2.5;
                 break;
-             case in_array($astr_hour, range(7125, 7725)):
+             case in_array($astr_hour, range(2.75*2700-$rate, 2.75*2700+$rate)):
                 $academ_hour = 2.75;
                 break;
-            case in_array($astr_hour, range(7800, 8400)):
+            case in_array($astr_hour, range(3*2700-$rate, 3*2700+$rate)):
                 $academ_hour = 3;
                 break;
-            case in_array($astr_hour, range(8475, 9075)):
+            case in_array($astr_hour, range(3.25*2700-$rate, 3.25*2700+$rate)):
                 $academ_hour = 3.25;
                 break;
-            case in_array($astr_hour, range(9150, 9750)):
+            case in_array($astr_hour, range(3.5*2700-$rate, 3.5*2700+$rate)):
                 $academ_hour = 3.5;
                 break;
-            case in_array($astr_hour, range(9825, 10425)):
+            case in_array($astr_hour, range(3.75*2700-$rate, 3.75*2700+$rate)):
                 $academ_hour = 3.75;
                 break;
-            case in_array($astr_hour, range(10500, 11100)):
+            case in_array($astr_hour, range(4*2700-$rate, 4*2700+$rate)):
                 $academ_hour = 4;
                 break;
             default:
@@ -191,10 +210,10 @@ class Schedule
     public static function getStartEndDay($timestamp = false)
     {
         $timestamp = $timestamp ? $timestamp : time();
-        $m = date('m', $timestamp);
-        $d = date('d', $timestamp);
-        $y = date('Y', $timestamp);
 
-        return [mktime(0, 0, 0, $m, $d, $y), mktime(23, 59, 59, $m, $d, $y)];
+        $beginOfDay = strtotime("today", $timestamp);
+        $endOfDay   = strtotime("tomorrow", $beginOfDay) - 1;
+
+        return [$beginOfDay, $endOfDay];
     }
 }

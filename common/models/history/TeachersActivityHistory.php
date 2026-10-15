@@ -20,6 +20,8 @@ class TeachersActivityHistory extends BaseHistory
     protected function getFields()
     {
         return [
+            'tab_num',
+            'tab_num_extra',
             'direction_vid_id',
             'direction_id',
             'stake_id',

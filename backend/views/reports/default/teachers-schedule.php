@@ -8,6 +8,7 @@ $stat = [];
 $total[1000][1000] = $total[1000][1001] = $total[1001][1000] = $total[1001][1001] = 0;
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
 $direction_list = \common\models\guidejob\Direction::getDirectionShortList();
+$direction_list_vid = \common\models\guidejob\DirectionVid::getDirectionVidShortList();
 
 ?>
 
@@ -44,7 +45,7 @@ $direction_list = \common\models\guidejob\Direction::getDirectionShortList();
                                 <th class="text-center" style="width: 200px">Нагрузка факт</th>
                                 <th class="text-center" style="white-space:nowrap;">Группа/Ученик</th>
                                 <th class="text-center">Предмет</th>
-                                <th class="text-center">Деятельность</th>
+                                <th class="text-center">Деятельность(Вид)</th>
                                 <th class="text-center">Кабинет</th>
                             </tr>
                             </thead>
@@ -70,7 +71,7 @@ $direction_list = \common\models\guidejob\Direction::getDirectionShortList();
                                         <?= $items->subject; ?>
                                     </td>
                                     <td>
-                                        <?= $direction_list[$items->direction_id] ?? ''; ?>
+                                        <?= $direction_list[$items->direction_id] ?? ''; ?> (<?= $direction_list_vid[$items->direction_vid_id] ?? ''; ?>)
                                     </td>
                                     <td>
                                         <?= $auditory_list[$items->auditory_id] ?? ''; ?>
@@ -82,14 +83,14 @@ $direction_list = \common\models\guidejob\Direction::getDirectionShortList();
                                 <td>
                                     <?php echo $stat[$day][1000][1000] . '/' . $stat[$day][1000][1001] ?>
                                 </td>
-                                <td colspan="4"></td>
+                                <td colspan="5"></td>
                             </tr>
                             <tr class="info">
                                 <td colspan="1">Преп/Конц - внебюджет</td>
                                 <td>
                                     <?php echo $stat[$day][1001][1000] . '/' . $stat[$day][1001][1001] ?>
                                 </td>
-                                <td colspan="4"></td>
+                                <td colspan="5"></td>
                             </tr>
                             </tbody>
                         </table>

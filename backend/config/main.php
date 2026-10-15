@@ -6,6 +6,7 @@ $params = array_merge(
 );
 
 $config =  [
+    'catchAll' => env('MAINTENANCE', false) ? ['/service/maintenance'] : false,
     'id' => 'backend',
     'homeUrl' => '/admin',
     'basePath' => dirname(__DIR__),

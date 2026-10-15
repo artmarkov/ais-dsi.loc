@@ -22,6 +22,8 @@ $teachers_list = RefBook::find('teachers_fio')->getList();
 $auditory_list = RefBook::find('auditory_memo_1')->getList();
 $noteModel = NoticeDisplay::getData($dataProvider->models, $model_date->plan_year);
 $readonly = ($noteModel->confirmIsAvailable() && Teachers::isOwnTeacher($model->id)) ? false : true;
+$direction_list = \common\models\guidejob\Direction::getDirectionShortList();
+$direction_vid_list = \common\models\guidejob\DirectionVid::getDirectionVidShortList();
 
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
@@ -75,11 +77,20 @@ $columns = [
     ],
     [
         'attribute' => 'direction_id',
-        'value' => function ($model, $key, $index, $widget)  {
-            return $model->direction ? $model->direction->name : null;
+        'value' => function($model) use ($direction_list)  {
+            return $direction_list[$model->direction_id] ?? null;
         },
         'group' => true,  // enable grouping
         'subGroupOf' => 3
+    ],
+    [
+        'attribute' => 'direction_vid_id',
+        'value' => function ($model) use ($direction_vid_list) {
+            return $direction_vid_list[$model->direction_vid_id] ?? null;
+        },
+
+        'group' => true,  // enable grouping
+        'subGroupOf' => 4
     ],
     [
         'attribute' => 'teachers_id',
@@ -87,7 +98,7 @@ $columns = [
             return $teachers_list[$model->teachers_id] ?? '';
         },
         'group' => true,  // enable grouping
-        'subGroupOf' => 4
+        'subGroupOf' => 5
     ],
     [
         'attribute' => 'load_time',
@@ -96,7 +107,7 @@ $columns = [
         },
         'format' => 'raw',
         'group' => true,  // enable grouping
-        'subGroupOf' => 5
+        'subGroupOf' => 6
     ],
     [
         'attribute' => 'scheduleDisplay',
@@ -271,7 +282,7 @@ $columns = [
                     [
                         'columns' => [
                             ['content' => 'Учебный предмет', 'options' => ['colspan' => 4, 'class' => 'text-center warning']],
-                            ['content' => 'Нагрузка', 'options' => ['colspan' => 3, 'class' => 'text-center info']],
+                            ['content' => 'Нагрузка', 'options' => ['colspan' => 4, 'class' => 'text-center info']],
                             ['content' => 'Расписание занятий', 'options' => ['colspan' => 3, 'class' => 'text-center danger']],
                         ],
                         'options' => ['class' => 'skip-export'] // remove this row from export

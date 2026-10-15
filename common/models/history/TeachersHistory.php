@@ -30,7 +30,7 @@ class TeachersHistory extends BaseHistory
             'position_id',
             'level_id',
             'work_id',
-            'tab_num',
+//            'tab_num',
             'department_list',
             'year_serv',
             'year_serv_spec',

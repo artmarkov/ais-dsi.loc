@@ -22,20 +22,21 @@ $data = $model->getInvoicesData();
         </div>
         <div class="panel-body">
             <div class="panel panel-default">
-                <div class="panel-heading pull-right">
-
-                </div>
                 <div class="panel-body">
+                        <?php if (\artsoft\Art::isBackend() || \artsoft\Art::isFrontend()): ?>
                     <div class="col-md-4">
-                        <?php echo Text::widget([
-                            'outputDir' => '@webroot/upload/qrcode',
-                            'outputDirWeb' => '@web/upload/qrcode',
-                            'ecLevel' => QRcode::QR_ECLEVEL_L,
-                            'text' => $model->getQrContent($data),
-                            'size' => 2,
-                        ]); ?>
+                            <?php echo Text::widget([
+                                'outputDir' => '@webroot/upload/qrcode',
+                                'outputDirWeb' => '@web/upload/qrcode',
+                                'ecLevel' => QRcode::QR_ECLEVEL_L,
+                                'text' => $model->getQrContent($data),
+                                'size' => 2,
+                            ]); ?>
                     </div>
                     <div class="col-md-8">
+                        <?php else: ?>
+                    <div class="col-md-12">
+                        <?php endif; ?>
                         <div class="table-responsive kv-grid-container">
                             <table class="table table-bordered table-striped">
                                 <tbody>

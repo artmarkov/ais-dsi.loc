@@ -36,7 +36,7 @@ $this->registerJs($js);
 
 $readonly = in_array($model->doc_status, [1, 2]) && \artsoft\Art::isFrontend() ? true : $readonly;
 $subject = '';
-if($model->studyplan_subject_id != 0) {
+if ($model->studyplan_subject_id != 0) {
     $subject = Yii::$app->db->createCommand(' select concat(subject, \'[\', sect_name, \']\')
                     FROM studyplan_thematic_view 
                     where  studyplan_subject_id = :studyplan_subject_id ',
@@ -200,29 +200,33 @@ if($model->studyplan_subject_id != 0) {
                         <?php DynamicFormWidget::end(); ?>
                     </div>
                 </div>
-                <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
-                    'data' => \common\models\studyplan\StudyplanThematic::getDocStatusList(),
-                    'showToggleAll' => false,
-                    'options' => [
-                        'disabled' => true,
-                        'placeholder' => Yii::t('art', 'Select...'),
-                        'multiple' => false,
-                    ],
-                    'pluginOptions' => [
-                        'allowClear' => false,
-                    ],
-                ]);
-                ?>
-                <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
-                    'data' => Teachers::getTeachersByIds(User::getUsersByRole('department,administrator')),
-                    'options' => [
-                        'disabled' => $readonly,
-                        'placeholder' => Yii::t('art', 'Select...'),
-                    ],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                ])->hint('Время согласования:' . Yii::$app->formatter->asDatetime($model->doc_sign_timestamp)); ?>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model->loadDefaultValues(), 'doc_status')->widget(\kartik\select2\Select2::class, [
+                            'data' => \common\models\studyplan\StudyplanThematic::getDocStatusList(),
+                            'showToggleAll' => false,
+                            'options' => [
+                                'disabled' => true,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                                'multiple' => false,
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => false,
+                            ],
+                        ]);
+                        ?>
+                        <?= $form->field($model, 'doc_sign_teachers_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => Teachers::getTeachersByIds(User::getUsersByRole('department,administrator')),
+                            'options' => [
+                                'disabled' => $readonly,
+                                'placeholder' => Yii::t('art', 'Select...'),
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => false,
+                            ]
+                        ])->hint('Время согласования:' . Yii::$app->formatter->asDatetime($model->doc_sign_timestamp)); ?>
+                    </div>
+                </div>
                 <?php if (\artsoft\Art::isBackend() || (\artsoft\Art::isFrontend() && Teachers::isOwnTeacher($model->doc_sign_teachers_id))): ?>
                     <div class="row">
                         <div class="col-sm-12">

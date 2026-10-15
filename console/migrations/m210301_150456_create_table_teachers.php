@@ -233,6 +233,8 @@ class m210301_150456_create_table_teachers extends \artsoft\db\BaseMigration
             'direction_vid_id' => $this->integer()->notNull(),
             'direction_id' => $this->integer()->notNull(),
             'stake_id' => $this->integer(),
+            'tab_num' => $this->string(16),
+            'tab_num_extra' => $this->string(16),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(),
             'updated_at' => $this->integer()->notNull(),

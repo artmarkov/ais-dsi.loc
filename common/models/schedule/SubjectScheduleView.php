@@ -10,6 +10,7 @@ use common\models\studyplan\Studyplan;
 use common\models\teachers\TeachersPlan;
 use Yii;
 use artsoft\widgets\Tooltip;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -24,6 +25,7 @@ use yii\helpers\ArrayHelper;
  * @property float|null week_time
  * @property int|null teachers_load_id
  * @property int|null direction_id
+ * @property int|null direction_vid_id
  * @property int|null teachers_id
  * @property int|null load_time
  * @property int|null subject_schedule_id
@@ -64,6 +66,7 @@ class SubjectScheduleView extends SubjectSchedule
         $attr['subject_type_id'] = Yii::t('art/guide', 'Subject Type ID');
         $attr['plan_year'] = Yii::t('art/studyplan', 'Plan Year');
         $attr['direction_id'] = Yii::t('art/teachers', 'Name Direction');
+        $attr['direction_vid_id'] = Yii::t('art/teachers', 'Name Direction Vid');
         $attr['teachers_id'] = Yii::t('art/teachers', 'Teachers');
         $attr['load_time'] = Yii::t('art/guide', 'Load Time');
         $attr['subject_schedule_id'] = Yii::t('art/guide', 'Subject Schedule');
@@ -237,7 +240,6 @@ class SubjectScheduleView extends SubjectSchedule
 //    }
 
 
-
     /**
      * Запрос на полное время занятий расписания преподавателя данной нагрузки
      * @param $teachersLoadIds
@@ -332,19 +334,23 @@ class SubjectScheduleView extends SubjectSchedule
 //        }
 //    }
 
-    public static function getScheduleIsExist($subject_sect_studyplan_id, $studyplan_subject_id)
+    public static function getScheduleIsExist($subject_sect_studyplan_id, $studyplan_subject_id, $teachers_id = null)
     {
         if ($subject_sect_studyplan_id == 0) {
-            return self::find()->where(['=', 'studyplan_subject_id', $studyplan_subject_id])->exists();
-
+            $exists = self::find()->where(['=', 'studyplan_subject_id', $studyplan_subject_id]);
+        } else {
+            $exists = self::find()->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id]);
         }
-        return self::find()->where(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])->exists();
+        if ($teachers_id != null) {
+            $exists = $exists->andWhere(['teachers_id' => $teachers_id]);
+        }
+        return $exists->exists();
     }
 
     /**
- * @return string|null
- * @throws \Exception
- */
+     * @return string|null
+     * @throws \Exception
+     */
     public function getScheduleDisplay()
     {
         $string = ' ' . ArtHelper::getWeekValue('short', $this->week_num);
@@ -352,6 +358,21 @@ class SubjectScheduleView extends SubjectSchedule
         return $this->time_in ? $string : null;
     }
 
+    public static function getDirectionVidListByTeachersLoadId($teachers_id = null, $direction_id, $studyplan_subject_id, $subject_sect_studyplan_id)
+    {
+        if (!$teachers_id && !$direction_id && !$studyplan_subject_id && !$subject_sect_studyplan_id) {
+            return [];
+        }
+        $models = (new Query())->from('subject_schedule_view')
+            ->innerJoin('guide_teachers_direction_vid', 'guide_teachers_direction_vid.id = subject_schedule_view.direction_vid_id')
+            ->select('subject_schedule_view.teachers_load_id as id, guide_teachers_direction_vid.name as name')
+            ->where(['=', 'teachers_id', $teachers_id])
+            ->andWhere(['=', 'studyplan_subject_id', $studyplan_subject_id])
+            ->andWhere(['=', 'direction_id', $direction_id])
+            ->andWhere(['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id])
+            ->all();
+        return \yii\helpers\ArrayHelper::map($models, 'id', 'name');
+    }
 //    public function getScheduleNotice($note, $teachers_load_id)
 //    {
 //        $string = [];

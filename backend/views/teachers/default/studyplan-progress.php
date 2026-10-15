@@ -43,11 +43,15 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
         )];
     }
     $item = 0;
+    $lessonDates = \yii\helpers\ArrayHelper::getColumn($model['lesson_timestamp'], 'lesson_date');
+    $lessonItems = LessonItems::isLessonAllExist($model['subject_sect_studyplan_id'], 0, $lessonDates);
+    $lessons = \yii\helpers\ArrayHelper::index($lessonItems, 'lesson_date');
+//    echo '<pre>' . print_r($lessons, true) . '</pre>'; die();
     foreach ($model['lesson_timestamp'] as $id => $item) {
-        if ($lesson_items_id = LessonItems::isLessonAllExist($model['subject_sect_studyplan_id'], 0, $item['lesson_date'])) {
+        if (isset($lessons[$item['lesson_date']])) {
             $content += [$id + 4 => Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'] :
-                        ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
+                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lessons[$item['lesson_date']]['id'], 'mode' => 'update'] :
+                        ['/teachers/studyplan-progress/update', 'id' => $model['teachers_id'], 'id' => $lessons[$item['lesson_date']]['id']], [
                         'disabled' => \artsoft\Art::isFrontend() && (!Teachers::isOwnTeacher($modelTeachers->id) || Routine::isDisorder($item['lesson_date'], $user_id)),
                         'title' => Yii::t('art', 'Update'),
                         'data-method' => 'post',
@@ -55,8 +59,8 @@ $editMarks = function ($model, $key, $index, $widget) use ($modelTeachers, $atte
                         'class' => 'btn btn-xxs btn-link',
                     ])
                 . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lesson_items_id, 'mode' => 'delete'] :
-                        ['/teachers/studyplan-progress/delete', 'id' => $model['teachers_id'], 'id' => $lesson_items_id], [
+                    \artsoft\Art::isBackend() ? ['/teachers/default/studyplan-progress', 'id' => $model['teachers_id'], 'objectId' => $lessons[$item['lesson_date']]['id'], 'mode' => 'delete'] :
+                        ['/teachers/studyplan-progress/delete', 'id' => $model['teachers_id'], 'id' => $lessons[$item['lesson_date']]['id']], [
                         'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                         'title' => Yii::t('art', 'Delete'),
                         'class' => 'btn btn-xxs btn-link',

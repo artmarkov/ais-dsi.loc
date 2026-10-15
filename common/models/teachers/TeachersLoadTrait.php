@@ -108,7 +108,7 @@ trait TeachersLoadTrait
         $studentsFio = [];
 
         if ($this->subject_sect_studyplan_id !== null) {
-            $studentsFio = (new \yii\db\Query())->select('student_fullname')->from('studyplan_subject_view')->distinct()
+            $studentsFio = (new \yii\db\Query())->select('student_fullname')->from('studyplan_subject_memo_view')->distinct()
                 ->where(new \yii\db\Expression("studyplan_subject_id = any (string_to_array('{$this->studyplan_subject_list}', ',')::int[])"))
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],

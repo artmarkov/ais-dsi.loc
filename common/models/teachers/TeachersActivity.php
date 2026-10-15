@@ -21,6 +21,8 @@ use yii\db\Query;
  * @property int $direction_vid_id
  * @property int $direction_id
  * @property int $stake_id
+ * @property string $tab_num
+ * @property string $tab_num_extra
  *
  * @property TeachersDirectionVid $directionVid
  * @property TeachersDirection $direction
@@ -56,6 +58,7 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
         return [
             [['direction_vid_id', 'direction_id', 'stake_id'], 'required'],
             [['teachers_id', 'direction_vid_id', 'direction_id', 'stake_id'], 'integer'],
+            [['tab_num', 'tab_num_extra'], 'string', 'max' => 16],
 //            ['work_id', 'unique', 'targetAttribute' => ['teachers_id', 'work_id'], 'message' => Yii::t('art/teachers', 'The main activity may not be the same as the secondary one.')],
 //            ['direction_id', 'compareDirection'],
             [['direction_vid_id'], 'exist', 'skipOnError' => true, 'targetClass' => DirectionVid::class, 'targetAttribute' => ['direction_vid_id' => 'id']],
@@ -98,6 +101,8 @@ class TeachersActivity extends \artsoft\db\ActiveRecord
             'direction_vid_id' => Yii::t('art/teachers', 'Name Direction Vid'),
             'direction_id' => Yii::t('art/teachers', 'Name Direction'),
             'stake_id' => Yii::t('art/teachers', 'Name Stake'),
+            'tab_num' => Yii::t('art/teachers', 'Tab Num'),
+            'tab_num_extra' => Yii::t('art/teachers', 'Tab Num Extra'),
         ];
     }
 

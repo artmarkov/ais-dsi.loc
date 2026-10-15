@@ -67,7 +67,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
             TimestampBehavior::class,
             [
                 'class' => DateFieldBehavior::class,
-                'attributes' => ['lesson_date', 'datetime_in', 'datetime_out'],
+                'attributes' => ['lesson_date'],
             ],
         ];
     }
@@ -87,8 +87,8 @@ class LessonItems extends \artsoft\db\ActiveRecord
             $model = $model->one();
 
             if ($model) {
-                $this->datetime_in = $this->lesson_date . ' ' . $model->time_in;
-                $this->datetime_out = $this->lesson_date . ' ' . $model->time_out;
+                $this->datetime_in = Yii::$app->formatter->asTimestamp($this->lesson_date . ' ' . $model->time_in);
+                $this->datetime_out = Yii::$app->formatter->asTimestamp($this->lesson_date . ' ' . $model->time_out);
                 $this->auditory_id = $model->auditory_id;
                 if ($this->teachers_id == null) {
                     $this->teachers_id = $model->teachers_id;
@@ -220,12 +220,12 @@ class LessonItems extends \artsoft\db\ActiveRecord
 
     public static function isLessonAllExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp)
     {
-        return self::find()->joinWith('lessonTest')->where(
+        return self::find()->where(
             ['AND',
-                ['=', 'subject_sect_studyplan_id', $subject_sect_studyplan_id],
-                ['=', 'studyplan_subject_id', $studyplan_subject_id],
-                ['=', 'lesson_date', $lesson_timestamp],
-            ])->scalar();
+                ['subject_sect_studyplan_id' => $subject_sect_studyplan_id],
+                ['studyplan_subject_id' => $studyplan_subject_id],
+                ['lesson_date' => $lesson_timestamp],
+            ])->asArray()->all();
     }
 
 //    public static function isLessonExist($subject_sect_studyplan_id, $studyplan_subject_id, $lesson_timestamp)
@@ -387,6 +387,7 @@ class LessonItems extends \artsoft\db\ActiveRecord
         $modelsItems = [];
         $i = 0;
         if ($this->subject_sect_studyplan_id != 0) {
+            $studyplanSubjectsPass = StudyplanSubjectHist::getStudyplanSubjectPass();
             $studyplan = [];
             $models1 = LessonItemsProgressView::find()
                 ->where(['=', 'lesson_items_id', $this->id])
@@ -399,20 +400,19 @@ class LessonItems extends \artsoft\db\ActiveRecord
                         ['status_reason' => [1, 2, 4]]
                     ]
                 ])
-                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->andWhere(['not in', 'studyplan_subject_id', $studyplanSubjectsPass])
                 ->all();
-
-            foreach ($models1 as $item => $modelItems) {
-                $m = LessonProgress::find()->where(['=', 'id', $modelItems->lesson_progress_id])->one();
-                if ($m) {
+            $lessonProgressIds = ArrayHelper::getColumn($models1,'lesson_progress_id');
+            $models = LessonProgress::find()->where(['id' => $lessonProgressIds])->all();
+           // echo '<pre>' . print_r($m, true) . '</pre>'; die();
+            foreach ($models as $item => $modelItems) {
                     $studyplan[] = $modelItems->studyplan_subject_id;
-                    $modelsItems[$i] = $m;
+                    $modelsItems[$i] = $modelItems;
                     $i++;
-                }
             }
             $models2 = LessonProgressView::find()->select('studyplan_subject_id')
                 ->where(['=', 'subject_sect_studyplan_id', $this->subject_sect_studyplan_id])
-                ->andWhere(['not in', 'studyplan_subject_id', StudyplanSubjectHist::getStudyplanSubjectPass()])
+                ->andWhere(['not in', 'studyplan_subject_id', $studyplanSubjectsPass])
                 // ->andWhere(['status' => Studyplan::STATUS_ACTIVE])
                 ->andWhere(['OR',
                     ['status' => Studyplan::STATUS_ACTIVE],

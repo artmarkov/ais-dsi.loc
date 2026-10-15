@@ -63,7 +63,9 @@ if($teachersLoadModel->studyplan_subject_id != 0) {
 
                         <?= $form->field($model, 'time_in')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
 
-                        <?= $form->field($model, 'time_out')->widget(\yii\widgets\MaskedInput::className(), ['mask' => Yii::$app->settings->get('reading.time_mask')])->textInput(['autocomplete' => 'off', 'disabled' => $readonly]); ?>
+                        <?= $form->field($model, "time_duration")->dropDownList(['' => Yii::t('art/guide', 'Select...')] +\common\models\schedule\SubjectSchedule::getDurationList()) ?>
+
+                        <?= $form->field($model, "time_out")->textInput(['maxlength' => true, 'disabled' => true]) ?>
                     </div>
                     <?= $form->field($model, "auditory_id")->dropDownList(['' => Yii::t('art/guide', 'Select auditory...')] + RefBook::find('auditory_memo_1')->getList()) ?>
 
@@ -84,3 +86,31 @@ if($teachersLoadModel->studyplan_subject_id != 0) {
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php
+$script = <<< JS
+$("#consultschedule-time_duration").on('change', function(event, key) {
+    let time_in = document.getElementById('consultschedule-time_in').value;
+    let time_duration = document.getElementById('consultschedule-time_duration').value;
+    //  console.log(time_duration);
+    $.ajax({
+            url: '/admin/schedule/default/select',
+            type: 'POST',
+            data: {
+                time_in: time_in,
+                time_duration: time_duration
+            },
+            success: function (val) {
+                   let  p = jQuery.parseJSON(val);
+                   // console.log(val);
+                   document.getElementById('consultschedule-time_out').value = p.time_out;
+            },
+            error: function () {
+                alert('Error!!!');
+            }
+        });
+
+});
+JS;
+$this->registerJs($script, \yii\web\View::POS_END);
+?>

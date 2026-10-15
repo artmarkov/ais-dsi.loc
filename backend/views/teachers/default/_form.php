@@ -169,7 +169,6 @@ EOF;
                                     'disabled' => $readonly,
                                 ])->label(Yii::t('art/teachers', 'Name Work'));
                                 ?>
-                                <?= $form->field($model, 'tab_num')->textInput(['maxlength' => true]) ?>
                                 <?= $form->field($model, 'year_serv')->textInput() ?>
                                 <?= $form->field($model, 'date_serv')->widget(DatePicker::class, ['disabled' => $readonly])->label(Yii::t('art/teachers', 'For date')); ?>
                                 <?= $form->field($model, 'year_serv_spec')->textInput() ?>
@@ -212,6 +211,7 @@ EOF;
                     'model' => $modelsActivity[0],
                     'formId' => 'teachers-form',
                     'formFields' => [
+                        'tab_num',
                         'direction_vid_id',
                         'direction_id',
                         'stake_id',
@@ -266,6 +266,14 @@ EOF;
                                             'id' => 'direction_id',
                                             'disabled' => $readonly,
                                         ])->label(Yii::t('art/teachers', 'Name Stake'));
+                                        ?>
+                                        <?= $form->field($modelActivity, "[{$index}]tab_num")
+                                            ->textInput(['autocomplete' => 'off', 'disabled' => $readonly])
+                                            ->label(Yii::t('art/teachers', 'Tab Num'));
+                                        ?>
+                                        <?= $form->field($modelActivity, "[{$index}]tab_num_extra")
+                                            ->textInput(['autocomplete' => 'off', 'disabled' => $readonly])
+                                            ->label(Yii::t('art/teachers', 'Tab Num Extra'));
                                         ?>
                                     </div>
                                 </div>

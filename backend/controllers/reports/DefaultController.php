@@ -7,6 +7,7 @@ use common\models\reports\ProgressHistory;
 use common\models\reports\ProgressReport;
 use common\models\reports\CreativeStat;
 use common\models\reports\ScheduleProject;
+use common\models\reports\StudyplanTimesheet;
 use common\models\studyplan\SchoolWorkload;
 use common\models\studyplan\StudyplanDistrib;
 use common\models\studyplan\StudyplanHistory;
@@ -27,7 +28,7 @@ use yii\web\UploadedFile;
 
 class DefaultController extends MainController
 {
-    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult', 'creative', 'mosticket', 'schedule-project', 'teachers-list'];
+    public $freeAccessActions = ['studyplan-distrib', 'school-workload', 'time-reserve', 'progress-history', 'teachers-consult', 'creative', 'mosticket', 'schedule-project', 'teachers-list', 'studyplan-timesheet',];
 
     public function actionIndex()
     {
@@ -509,6 +510,33 @@ class DefaultController extends MainController
         }
 
         return $this->renderIsAjax('schedule-project', [
+            'model_date' => $model_date,
+        ]);
+    }
+
+    public function actionStudyplanTimesheet()
+    {
+        $session = Yii::$app->session;
+        $this->view->params['tabMenu'] = $this->tabMenu;
+
+        $model_date = new DynamicModel(['date_in', 'education_cat_id', 'programm_id', 'subject_form_id']);
+        $model_date->addRule(['date_in', 'education_cat_id', 'programm_id'], 'required')
+            ->addRule(['plan_year', 'education_cat_id'], 'integer')
+            ->addRule(['date_in'], 'date', ['format' => 'php:m.Y'])
+            ->addRule(['programm_id', 'subject_form_id'], 'safe');
+        if (!($model_date->load(Yii::$app->request->post()) && $model_date->validate())) {
+
+            $model_date->plan_year = $session->get('__backendPlanYear') ?? \artsoft\helpers\ArtHelper::getStudyYearDefault();
+            $model_date->programm_id = $session->get('_studyplan_timesheet_programm_id') ?: '';
+            $model_date->education_cat_id = $session->get('_studyplan_timesheet_education_cat_id') ?: '';
+        }
+
+        if (Yii::$app->request->post('submitAction') == 'excel') {
+            $models = new StudyplanTimesheet($model_date);
+            $models->sendXlsx();
+        }
+
+        return $this->renderIsAjax('studyplan_timesheet', [
             'model_date' => $model_date,
         ]);
     }

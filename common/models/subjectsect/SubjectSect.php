@@ -258,6 +258,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
                 and case when {$course} != 0 then course = {$course} else true end
                 and case when {$qtyFlag} != 0 then course = any (string_to_array('{$course_list}', ',')::int[]) else true end
                 and status = 1
+                and studyplan_subject_status = 1
                 and subject_sect_studyplan_id is null
                 and studyplan_subject_id != all( 
                 select studyplan_subject_id
@@ -271,6 +272,7 @@ class SubjectSect extends \artsoft\db\ActiveRecord
                 and case when {$course} != 0 then course = {$course} else true end
                 and case when {$qtyFlag} != 0 then course = any (string_to_array('{$course_list}', ',')::int[]) else true end
                 and status = 1
+                and studyplan_subject_status = 1
                 and subject_sect_studyplan_id is not null
                 )
                 order by student_fio

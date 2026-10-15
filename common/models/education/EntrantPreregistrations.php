@@ -26,6 +26,7 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_at
  * @property int|null $updated_by
  * @property int $status
+ * @property int $svo_flag
  *
  * @property EntrantProgramm $entrantProgramm
  * @property Student $student
@@ -65,8 +66,8 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
     public function rules()
     {
         return [
-            [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid'], 'required'],
-            [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid', 'status'], 'integer'],
+            [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid', 'svo_flag'], 'required'],
+            [['plan_year', 'entrant_programm_id', 'student_id', 'reg_vid', 'status', 'svo_flag'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['entrant_programm_id'], 'exist', 'skipOnError' => true, 'targetClass' => EntrantProgramm::class, 'targetAttribute' => ['entrant_programm_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::class, 'targetAttribute' => ['student_id' => 'id']],
@@ -93,6 +94,7 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
             'updated_at' => Yii::t('art', 'Updated'),
             'updated_by' => Yii::t('art', 'Updated By'),
             'status' => Yii::t('art', 'Status'),
+            'svo_flag' => 'Родитель - участник СВО',
         ];
     }
 
@@ -153,7 +155,7 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
      */
     public static function getEntrantPreregistrationList()
     {
-       $query = self::find()->innerJoin('students', 'entrant_preregistrations.student_id = students.id')
+        $query = self::find()->innerJoin('students', 'entrant_preregistrations.student_id = students.id')
             ->innerJoin('user_common', 'user_common.id = students.user_common_id')
             ->andWhere(['in', 'user_common.user_category', UserCommon::USER_CATEGORY_STUDENTS])// только ученики
             ->select(['students.id as id', "CONCAT(user_common.last_name, ' ',user_common.first_name, ' ',user_common.middle_name) AS name"])
@@ -243,6 +245,22 @@ class EntrantPreregistrations extends \artsoft\db\ActiveRecord
         echo '<pre>' . print_r($model_date, true) . '</pre>';
         die();
         return ['data' => $data, 'lessonDates' => $dates, 'attributes' => $attributes];
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        if (isset($changedAttributes['svo_flag']) && $changedAttributes['svo_flag'] != 1 && $this->svo_flag == 1) {
+            $modelStudent = Student::findOne(['id' => $this->student_id]);
+            $modelStudent->limited_status_list = array_values(array_unique(array_filter(explode(',', (implode(',', $modelStudent->limited_status_list) . ',5000')))));
+            $modelStudent->save(false);
+        } elseif (isset($changedAttributes['svo_flag']) && $changedAttributes['svo_flag'] == 1 && $this->svo_flag == 0) {
+            $modelStudent = Student::findOne(['id' => $this->student_id]);
+            $string = implode(',', $modelStudent['limited_status_list']);
+            $string = str_replace('5000', '', $string);
+            $modelStudent->limited_status_list = array_values(array_unique(array_filter(explode(',', $string))));
+            $modelStudent->save(false);
+        }
     }
 
     public function beforeSave($insert)

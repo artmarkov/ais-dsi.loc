@@ -1823,6 +1823,10 @@ class DefaultController extends MainController
             ]);
 
         } else {
+            $model_date = $this->modelDate;
+            if (!isset($model_date)) {
+                throw new NotFoundHttpException("The model_date was not found.");
+            }
             $modelClass = 'common\models\info\Document';
             $searchModel = new DocumentSearch();
 
@@ -1842,7 +1846,8 @@ class DefaultController extends MainController
             return $this->renderIsAjax('document', [
                 'dataProvider' => $dataProvider,
                 'searchModel' => $searchModel,
-                'modelTeachers' => $model
+                'modelTeachers' => $model,
+                'model_date' => $model_date
             ]);
         }
     }

@@ -20,6 +20,7 @@ use artsoft\grid\GridPageSize;
             Документы: <?php echo \artsoft\helpers\RefBook::find('teachers_fullname')->getValue($modelTeachers->id); ?>
         </div>
         <div class="panel-body">
+            <?= $this->render('_search-document', compact('model_date')) ?>
             <?= \artsoft\helpers\ButtonHelper::createButton(); ?>
             <div class="row">
                 <div class="col-sm-6">

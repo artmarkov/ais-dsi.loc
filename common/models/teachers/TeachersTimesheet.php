@@ -56,7 +56,7 @@ class TeachersTimesheet
         $this->year = date('Y', $this->timestamp_in);
         $this->plan_year = ArtHelper::getStudyYearDefault(9, $this->timestamp_in);
         $this->subject_type_id = $model_date->subject_type_id;
-        $this->activity_list = $model_date->activity_list;
+        $this->activity_list = array_filter($model_date->activity_list);
         $this->progress_flag = $model_date->progress_flag ?? false;
         $this->holidays_flag = $model_date->holidays_flag ?? false;
         $this->is_avans = $model_date->is_avans ?? false;
@@ -347,7 +347,7 @@ class TeachersTimesheet
                 'first_name' => $d->first_name,
                 'middle_name' => $d->middle_name,
                 'stake_slug' => $d->stake_slug,
-                'tab_num' => $d->tab_num,
+                'tab_num' => $this->subject_type_id == 1000 ? $d->tab_num : $d->tab_num_extra,
                 'direction_slug' => $d->direction_slug . ' - ' . $d->direction_vid_slug,
                 'days' => $mega,
             ];

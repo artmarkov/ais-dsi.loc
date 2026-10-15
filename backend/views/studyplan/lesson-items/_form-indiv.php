@@ -27,10 +27,15 @@ $subject = (new \yii\db\Query())
 $division_list = \common\models\education\EducationCat::find()->select('division_list')
     ->where(['id' => $subject['education_cat_id']])
     ->column();
-
-//print_r($subject); die();
+$studyplanSubjectIds = \yii\helpers\ArrayHelper::getColumn($modelsItems, 'studyplan_subject_id');
+$studentQuery = (new \yii\db\Query())->select('studyplan_subject_id, student_fullname')
+    ->from('studyplan_subject_memo_view')
+    ->where(['studyplan_subject_id' => $studyplanSubjectIds])
+    ->all();
+$studentFioList = \yii\helpers\ArrayHelper::map($studentQuery,'studyplan_subject_id','student_fullname');
 $auditoryList = RefBook::find('auditory_memo_1')->getList();
-$studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList();
+$testList =  \common\models\education\LessonTest::getLessonTestList($model,[1], $division_list);
+
 ?>
 <div class="lesson-items-form">
     <?php
@@ -90,7 +95,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                         <div class="panel-body">
                             <div class="row">
                                 <?= $form->field($model, "lesson_test_id")->widget(\kartik\select2\Select2::class, [
-                                    'data' => \common\models\education\LessonTest::getLessonTestList($model,[1], $division_list),
+                                    'data' => $testList,
                                     'options' => [
 //                                'disabled' => $readonly,
                                         'placeholder' => Yii::t('art', 'Select...'),
@@ -153,7 +158,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
                                                             [
                                                                 'model' => $modelItems,
                                                                 'attribute' => "[{$index}]lesson_test_id",
-                                                                'data' => \common\models\education\LessonTest::getLessonTestList($model,[1], $division_list),
+                                                                'data' => $testList,
                                                                 'options' => [
 
 //                                                                'disabled' => $readonly,

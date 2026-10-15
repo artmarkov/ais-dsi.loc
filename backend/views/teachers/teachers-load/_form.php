@@ -9,6 +9,21 @@ use artsoft\helpers\RefBook;
 /* @var $model common\models\teachers\TeachersLoad */
 /* @var $studyplanSubjectModel common\models\studyplan\StudyplanSubject */
 /* @var $form artsoft\widgets\ActiveForm */
+
+$subject = '';
+if ($model->studyplan_subject_id != 0) {
+    $subject = Yii::$app->db->createCommand(' select concat(subject, \' [\', sect_name, \']\')
+                    FROM teachers_load_view 
+                    where  studyplan_subject_id = :studyplan_subject_id ',
+        ['studyplan_subject_id' => $model->studyplan_subject_id,
+        ])->queryScalar();
+} else {
+    $subject = Yii::$app->db->createCommand(' select concat(subject, \' [\', sect_name, \']\')
+                    FROM teachers_load_view 
+                    where subject_sect_studyplan_id = :subject_sect_studyplan_id',
+        ['subject_sect_studyplan_id' => $model->subject_sect_studyplan_id,
+        ])->queryScalar();
+}
 ?>
 
 <div class="teachers-load-form">
@@ -23,8 +38,9 @@ use artsoft\helpers\RefBook;
     <div class="panel">
         <div class="panel-heading">
             Элемент нагрузки преподавателя:
-            <?php echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
-            <?php echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+            <?php //echo RefBook::find('subject_memo_2')->getValue($model->studyplan_subject_id); ?>
+            <?php //echo RefBook::find('sect_name_2')->getValue($model->subject_sect_studyplan_id); ?>
+            <?php echo $subject; ?>
             <?php if (!$model->isNewRecord): ?>
                 <span class="pull-right"> <?= \artsoft\helpers\ButtonHelper::historyButton(); ?></span>
             <?php endif; ?>

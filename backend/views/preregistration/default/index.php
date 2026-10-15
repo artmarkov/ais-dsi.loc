@@ -124,7 +124,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'label' => 'Дата регистрации',
                     ],
-
+                    [
+                        'class' => 'artsoft\grid\columns\StatusColumn',
+                        'attribute' => 'svo_flag',
+                        'label' => 'СВО',
+                        'optionsArray' => [
+                            [1, 'Да', 'success'],
+                            [0, 'Нет', 'info'],
+                        ],
+                        'options' => ['style' => 'width:120px']
+                    ],
                     /*[
                         'attribute' => 'plan_year',
                         'filter' => false,

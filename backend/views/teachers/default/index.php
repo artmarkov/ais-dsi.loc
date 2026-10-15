@@ -158,7 +158,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                             ],
                             'bonus_summ_abs',
-                            'tab_num',
+//                            'tab_num',
                             [
                                 'class' => 'artsoft\grid\columns\StatusColumn',
                                 'attribute' => 'userStatus',

@@ -104,6 +104,8 @@ class LessonAddTask extends \yii\base\BaseObject implements \yii\queue\JobInterf
             $model->auditory_id = $data['auditory_id'] ?? null;
             if ($teachers_id != null) {
                 $model->teachers_id = $teachers_id;
+            } else {
+                $model->teachers_id = $data['teachers_id'] ?? null;
             }
             return $model->save(false) ? $model : false;
         }

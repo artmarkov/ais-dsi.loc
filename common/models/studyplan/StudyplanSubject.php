@@ -350,12 +350,12 @@ SQL;
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-        if (isset($changedAttributes['subject_vid_id']) && $changedAttributes['subject_vid_id'] == 1000) {
-            $this->cliarStudyplanSubjectDependency();
+        if ((isset($changedAttributes['subject_vid_id']) && $changedAttributes['subject_vid_id'] != 1000 && $this->subject_vid_id == 1000) || (isset($changedAttributes['status']) && $changedAttributes['status'] == 1 && $this->status == 0)) {
+            $this->cliarStudyplanSubjectDependency(false);
         }
     }
 
-    protected function cliarStudyplanSubjectDependency()
+    protected function cliarStudyplanSubjectDependency($removeIndivDependence = true)
     {
         $funcSql = <<< SQL
             select subject_sect_studyplan_id as id
@@ -370,20 +370,23 @@ SQL;
                 $model->removeStudyplanSubject($this->id);
             }
         }
-        $loadIds = TeachersLoad::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
-            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
-        TeachersLoad::deleteAll(['id' => $loadIds]);
+        // Удаляем зависимости только индивидуальных занятий при удалении дисциплины из плана
+        if($removeIndivDependence) {
+            $loadIds = TeachersLoad::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+            TeachersLoad::deleteAll(['id' => $loadIds]);
 
-        $thematicIds = StudyplanThematic::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
-            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
-        StudyplanThematic::deleteAll(['id' => $thematicIds]);
+            $thematicIds = StudyplanThematic::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+            StudyplanThematic::deleteAll(['id' => $thematicIds]);
 
 //        $progressIds = LessonProgress::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])->column();
 //        LessonProgress::deleteAll(['id' => $progressIds]);
 
-        $lessonIds = LessonItems::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
-            ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
-        LessonItems::deleteAll(['id' => $lessonIds]);
+            $lessonIds = LessonItems::find(['id'])->where(['=', 'studyplan_subject_id', $this->id])
+                ->andWhere(['=', 'subject_sect_studyplan_id', 0])->column();
+            LessonItems::deleteAll(['id' => $lessonIds]);
+        }
     }
 
 }

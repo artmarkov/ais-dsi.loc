@@ -45,7 +45,7 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
 
     public $time_duration;
 
-    const DURATION = [
+   /* const DURATION = [
         '20' => '20 мин',
         '25' => '25 мин',
         '30' => '30 мин',
@@ -72,6 +72,25 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
         '160' => '160 мин',
         '180' => '180 мин',
         '240' => '240 мин',
+    ];*/
+    const DURATION = [
+        '750' => '0.25 ак.ч - 12 мин',
+        '1320' => '0.5 ак.ч - 22 мин',
+        '2100' => '0.75 ак.ч - 35 мин',
+        '2700' => '1 ак.ч - 45 мин',
+        '3300' => '1.25 ак.ч - 55 мин',
+        '3900' => '1.5 ак.ч - 1ч.05 мин',
+        '4200' => '1.5+ ак.ч - 1ч.10 мин',
+        '4800' => '1.75 ак.ч - 1ч.20 мин',
+        '5400' => '2 ак.ч - 1ч.30 мин',
+        '6000' => '2.25 ак.ч - 1ч.40 мин',
+        '6900' => '2.5 ак.ч - 1ч.55 мин',
+        '7500' => '2.75 ак.ч - 2ч.05 мин',
+        '8100' => '3 ак.ч - 2ч.15 мин',
+        '9000' => '3.25 ак.ч - 2ч.30 мин',
+        '9600' => '3.5 ак.ч - 2ч.40 мин',
+        '10200' => '3.75 ак.ч - 2ч.50 мин',
+        '10800' => '4 ак.ч - 3ч.00 мин',
     ];
 
     /**
@@ -99,15 +118,15 @@ class SubjectSchedule extends \artsoft\db\ActiveRecord
 
     public function beforeValidate()
     {
-        if ($this->time_in) {
-            $this->time_out = Schedule::decodeTime(Schedule::encodeTime($this->time_in) + $this->time_duration * 60);
+        if (preg_match('/^([01]?[0-9]|2[0-3])(:|\.)[0-5][0-9]$/', $this->time_in)) {
+            $this->time_out = Schedule::decodeTime(Schedule::encodeTime($this->time_in) + $this->time_duration);
         }
         return parent::beforeValidate();
     }
 
     public function afterFind()
     {
-        $this->time_duration = ($this->time_out - $this->time_in) / 60;
+        $this->time_duration = ($this->time_out - $this->time_in);
         parent::afterFind();
     }
 

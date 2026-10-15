@@ -22,11 +22,11 @@ $columnsHeader = [];
 foreach ($model['columns'] as $my => $qty) {
     $columnsHeader[] = ['content' => $my, 'options' => ['colspan' => $qty, 'class' => 'text-center']];
 }
-
 //echo '<pre>' . print_r($model, true) . '</pre>'; die();
 $editMarks = function ($model, $key, $index, $widget) {
+    $scheduleExists = SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'], $model['teachers_id']);
     $content = [];
-    if (SubjectScheduleStudyplanView::getScheduleIsExist($model['subject_sect_studyplan_id'], $model['studyplan_subject_id'])) {
+    if ($scheduleExists) {
         if ($model['subject_sect_studyplan_id'] != 0) {
             $content += [2 => \yii\helpers\Html::a('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>',
                 ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'subject_sect_studyplan_id' => $model['subject_sect_studyplan_id'], 'teachers_id' => $model['teachers_id'], 'mode' => 'create'],
@@ -53,7 +53,7 @@ $editMarks = function ($model, $key, $index, $widget) {
     }
     $item = 0;
     foreach ($model['lesson_timestamp'] as $id => $item) {
-        if ($lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'], $model['teachers_id'])) {
+        if ($scheduleExists && $lesson_items_id = LessonItems::isLessonExist($model['subject_sect_studyplan_id'], $model['subject_sect_studyplan_id'] == 0 ? $model['studyplan_subject_id'] : 0, $item['lesson_date'], $model['teachers_id'])) {
             $content += [$id + 3 => ($model['subject_sect_studyplan_id'] == 0 ? Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
                     ['/studyplan/default/studyplan-progress', 'id' => $model['studyplan_id'], 'objectId' => $lesson_items_id, 'mode' => 'update'], [
                         'title' => Yii::t('art', 'Update'),
@@ -83,7 +83,7 @@ $editMarks = function ($model, $key, $index, $widget) {
         $item = $id;
     }
     $content += [$item + 4 => \yii\helpers\Html::a('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
-                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'update'], [
+            ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'update'], [
 //                'disabled' => \artsoft\Art::isFrontend() && !Teachers::isOwnTeacher($modelTeachers->id),
                 'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year'], $model['teachers_id']) == false,
                 'title' => Yii::t('art', 'Update'),
@@ -92,7 +92,7 @@ $editMarks = function ($model, $key, $index, $widget) {
                 'class' => 'btn btn-xxs btn-link',
             ])
         . Html::a('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-                ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'delete'], [
+            ['/studyplan/default/studyplan-progress-sertif', 'id' => $model['studyplan_id'], 'objectId' => base64_encode($model['studyplan_subject_id'] . '||' . $model['plan_year'] . '||' . $model['teachers_id']), 'mode' => 'delete'], [
                 'disabled' => \common\models\education\AttestationItems::isAttestationNeeds($model['studyplan_subject_id'], $model['plan_year'], $model['teachers_id']) == false,
                 'title' => Yii::t('art', 'Delete'),
                 'class' => 'btn btn-xxs btn-link',

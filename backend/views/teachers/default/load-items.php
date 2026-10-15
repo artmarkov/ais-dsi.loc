@@ -17,6 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 //$sect_list = \common\models\teachers\Teachers::getSectListForTeachers($model->id, $model_date->plan_year);
 $typeList = RefBook::find('subject_type_name')->getList();
+$direction_list = \common\models\guidejob\Direction::getDirectionShortList();
+$direction_vid_list = \common\models\guidejob\DirectionVid::getDirectionVidShortList();
+
 $columns = [
     ['class' => 'kartik\grid\SerialColumn'],
     [
@@ -113,8 +116,8 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
-        'value' => function ($model, $key, $index, $widget) {
-            return $model->direction ? $model->direction->slug : null;
+        'value' => function ($model) use ($direction_list) {
+            return $direction_list[$model->direction_id] ?? null;
         },
 
         'group' => true,  // enable grouping
@@ -129,8 +132,8 @@ $columns = [
         ],
         'filterInputOptions' => ['placeholder' => Yii::t('art', 'Select...')],
 
-        'value' => function ($model, $key, $index, $widget) {
-            return $model->directionVid ? $model->directionVid->slug : null;
+        'value' => function ($model) use ($direction_vid_list) {
+            return $direction_vid_list[$model->direction_vid_id] ?? null;
         },
 
         'group' => true,  // enable grouping

@@ -50,7 +50,7 @@ class DefaultController extends MainController
     {
         $time_in = \Yii::$app->request->post('time_in');
         $time_duration = \Yii::$app->request->post('time_duration');
-        $time_out = Schedule::decodeTime(Schedule::encodeTime($time_in) + $time_duration * 60);
+        $time_out = Schedule::decodeTime(Schedule::encodeTime($time_in) + $time_duration);
         return json_encode(['time_out' => $time_out]);
     }
 

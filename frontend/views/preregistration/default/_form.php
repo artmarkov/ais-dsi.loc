@@ -18,7 +18,7 @@ use artsoft\helpers\Html;
         'validateOnBlur' => false,
     ])
     ?>
-    <div class="alert alert-danger alert-dismissible fade in" role="alert">
+    <div class="alert alert-info alert-dismissible fade in" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -55,6 +55,7 @@ use artsoft\helpers\Html;
                     <?php
                     echo $form->field($model, 'entrant_programm_id')->dropDownList(\common\models\education\EntrantProgramm::getEntrantProgrammLimitList($age, $plan_year))->hint('Необходимо выбрать программу для предварительной записи.');
                     ?>
+                    <?= $form->field($model, 'svo_flag')->radioList([1 => 'Да', 0 => 'Нет']) ?>
                 </div>
             </div>
         </div>

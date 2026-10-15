@@ -18,7 +18,7 @@ class EntrantPreregistrationsSearch extends EntrantPreregistrations
     public function rules()
     {
         return [
-            [['id', 'entrant_programm_id', 'plan_year', 'student_id', 'reg_vid', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status'], 'integer'],
+            [['id', 'entrant_programm_id', 'plan_year', 'student_id', 'reg_vid', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status', 'svo_flag'], 'integer'],
         ];
     }
 
@@ -73,6 +73,7 @@ class EntrantPreregistrationsSearch extends EntrantPreregistrations
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
             'status' => $this->status,
+            'svo_flag' => $this->svo_flag,
         ]);
 
         return $dataProvider;
