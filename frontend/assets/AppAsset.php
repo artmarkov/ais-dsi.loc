@@ -22,9 +22,9 @@ class AppAsset extends AssetBundle
         'css/site.css',
         'css/spinner.css',
     ];
-    public $js = [
-        'js/spinner.js',
-    ];
+//    public $js = [
+//        'js/spinner.js',
+//    ];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
