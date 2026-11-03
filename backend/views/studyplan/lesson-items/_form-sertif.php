@@ -126,7 +126,7 @@ $studentFioList = RefBook::find('studyplan_subject-student_fullname')->getList()
         </div>
         <div class="panel-footer">
             <div class="form-group btn-group">
-                    <?= \artsoft\helpers\ButtonHelper::exitButton(['/teachers/studyplan-progress', 'id' => $modelTeachers->id]);?>
+                    <?= \artsoft\helpers\ButtonHelper::exitButton([\artsoft\Art::isFrontend() ? '/teachers/studyplan-progress' : '/teachers/default/studyplan-progress', 'id' => $modelTeachers->id]);?>
                 <?php if (!empty($modelsItems)): ?>
                     <?= \artsoft\helpers\ButtonHelper::saveButton('submitAction', 'saveexit', 'Save & Exit');?>
                 <?php endif; ?>

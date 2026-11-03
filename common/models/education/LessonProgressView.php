@@ -525,7 +525,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
             } elseif (isset($modelsMarksCertif[$modelProgress->studyplan_subject_id])) {
                 $mark = $modelsMarksCertif[$modelProgress->studyplan_subject_id];
               //  echo '<pre>' . print_r($mark, true) . '</pre>'; die();
-                $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->lessonMark->mark_label;
+                $data[$item]['pa'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : ($mark->lessonMark ? $mark->lessonMark->mark_label : '');
             }
 
             if (isset($modelsMarksProtocol_2[$modelProgress->studyplan_subject_id])) {
@@ -533,7 +533,7 @@ class LessonProgressView extends \artsoft\db\ActiveRecord
                 $data[$item]['ia'] = '<span title="Оценка выставлена через протокол" style="color: #468847;">' . $mark_label . '</span>';
             } elseif (isset($modelsMarksCertif_2[$modelProgress->studyplan_subject_id])) {
                 $mark = $modelsMarksCertif_2[$modelProgress->studyplan_subject_id];
-                $data[$item]['ia'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : $mark->lessonMark->mark_label;
+                $data[$item]['ia'] = $editTable ? self::getEditableFormAttestation($mark_list_sertif, $mark) : ($mark->lessonMark ? $mark->lessonMark->mark_label : '');
             }
         }
 

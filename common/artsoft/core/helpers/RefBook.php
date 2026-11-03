@@ -32,6 +32,8 @@ class RefBook
     protected $name;
     protected $refId;
     protected $grouping;
+    protected $ref;
+    protected $query;
     protected $list;
 
     /**
@@ -58,11 +60,14 @@ class RefBook
         $this->name = $name;
         $this->refId = $refId;
         $this->grouping = $grouping;
-        $this->load();
+        $this->ref = $this->findRef();
+        $this->query = $this->load();
     }
 
     public function getList()
     {
+        $this->list = ArrayHelper::map($this->query->orderBy($this->ref['sort_field'])->all(), $this->ref['key_field'], $this->ref['value_field'], $this->grouping ? $this->ref['group_field'] : null);
+
         return $this->list;
     }
 
@@ -78,10 +83,13 @@ class RefBook
 
     public function getValue($key)
     {
-        if (!$this->keyExists($key)) {
+        $value = $this->query->select($this->ref['value_field'])->andWhere([$this->ref['key_field'] => $key])->scalar();
+
+        return $value ?? null;
+        /*if (!$this->keyExists($key)) {
             return null; //throw new Exception('key not found: key='.$key);
         }
-        return $this->list[$key];
+        return $this->list[$key];*/
     }
 
     /**
@@ -89,15 +97,20 @@ class RefBook
      */
     protected function load()
     {
+        $query = (new \yii\db\Query)->from($this->ref['table_name']);
+        if ($this->ref['ref_field'] && $this->refId) {
+            $query->where([$this->ref['ref_field'] => $this->refId]);
+        }
+        return $query;
+    }
+
+    protected function findRef()
+    {
         $r = (new \yii\db\Query)->from('refbooks')->where(['name' => $this->name])->one();
         if (false === $r) {
             throw new \RuntimeException('refbook "' . $this->name . '" was not found');
         }
-        $query = (new \yii\db\Query)->from($r['table_name'])->orderBy($r['sort_field']);
-        if ($r['ref_field'] && $this->refId) {
-            $query->where([$r['ref_field'] => $this->refId]);
-        }
-        $this->list = ArrayHelper::map($query->all(), $r['key_field'], $r['value_field'], $this->grouping ? $r['group_field'] : null);
+        return $r;
     }
 
     /**

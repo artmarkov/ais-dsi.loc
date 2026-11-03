@@ -601,11 +601,12 @@ class Studyplan extends \artsoft\db\ActiveRecord
     {
         $doc_date = (new \yii\db\Query)->from('studyplan_hist')->select('doc_date')->distinct()
             ->where(['id' => $this->id])
-            ->andWhere(['IS NOT','doc_date', NULL])
+            ->andWhere(['IS NOT', 'doc_date', NULL])
             ->limit(1)->scalar();
 
         return $doc_date == null ? $this->doc_date : Yii::$app->formatter->asDate($doc_date);
     }
+
     /**
      * @param $modelProgrammLevel
      */
@@ -932,8 +933,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
         }
     }
 
-    public static function getStudentStudyplanDefault($student_id)
+    public static function getStudentStudyplanDefault($student_id = false)
     {
+        if (!$student_id) {
+            return null;
+        }
         $plan_year = ArtHelper::getStudyYearDefault(6);
         return self::find()->where(['=', 'student_id', $student_id])
                 ->andWhere(['=', 'plan_year', $plan_year])
@@ -942,8 +946,11 @@ class Studyplan extends \artsoft\db\ActiveRecord
 
     }
 
-    public static function getParentStudyplanDefault($parents_id)
+    public static function getParentStudyplanDefault($parents_id = false)
     {
+        if (!$parents_id) {
+            return null;
+        }
         $plan_year = ArtHelper::getStudyYearDefault(6);
         return self::find()
                 ->innerJoin('student_dependence', 'studyplan.student_id=student_dependence.student_id')
